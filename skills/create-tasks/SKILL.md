@@ -146,17 +146,16 @@ line: `{N} tasks. **Unblocked now: #…**`.
 - Every task starts `Status: PENDING` and `Review Rejections: 0` — the orchestrator owns
   these fields from here on; don't pre-fill statuses.
 
-### 6. Name the layer's test and review agents when the feature is not Python
+### 6. Name the pre-review gate when the feature is not Python
 
-`agent-developer` codes every layer and needs no note. The **test and review** agents do:
-`test-engineer` writes **pytest under `hardware-agent/tests/`** and `code-reviewer` gates on
-**`uv run pytest` + `uv run ruff check`**, neither of which exists in `frontend/`. When the feature's blast radius is not the Python layers, say so at
-the top of `TASKS.md`, name the agents to spawn instead, and state the gate command:
+The developer owns production code and tests through `ponytail` and `tdd`. The reviewer does
+not rerun the gate. When the feature's blast radius is not the Python layers, state the
+pre-review command at the top of `TASKS.md`:
 
-| Blast radius | Test agent | Review agent | Gate |
-|---|---|---|---|
-| `hardware-agent/`, `backend/` | `test-engineer` | `code-reviewer` | `uv run pytest` + `uv run ruff check` |
-| `frontend/` | `frontend-test-engineer` | `frontend-code-reviewer` | `npm run lint && npm run format:check && npm run typecheck && npm run test && npm run build` |
+| Blast radius | Pre-review gate |
+|---|---|
+| `hardware-agent/`, `backend/` | `uv run pytest` + `uv run ruff check` |
+| `frontend/` | `npm run lint && npm run format:check && npm run typecheck && npm run test && npm run build` |
 
 ### 7. Honor the CLAUDE.md integration rule
 

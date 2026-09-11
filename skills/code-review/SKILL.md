@@ -1,71 +1,164 @@
 ---
 name: code-review
-description: Use when the user asks for a code review or when the delivery pipeline reaches the review gate for an implemented task.
+description: Use when the user asks for a code review or when the delivery pipeline reaches the maintainability review gate for an implemented task.
 ---
 
-# Code Review
+# Thermo-nuclear code review
 
-Review **one orchestrator task**. Judge only what **this diff introduced or worsened**. Untouched lines are out of scope.
+Run an extremely strict review of the current Git changes. Focus on implementation quality, maintainability, abstraction quality, and codebase health.
 
-**Do not run the test suite.** The coder already did. Trust the Coverage map; reject if it is missing or not `PASS`. Broken tests must never reach this gate.
+Push for ambitious structural simplification. Do not stop at local cleanup. Search for "code judo" moves that preserve behavior while making the implementation smaller, more direct, and easier to understand.
 
-## You do
+## Review boundary
 
-1. Read the current task in `TASKS.md` (description, Success Criteria, Target Files).
-2. `git diff` on Target Files plus tests for the same repo (`src/test/java` or colocated `*.spec.ts(x)`). Empty production diff → `[REJECT]`.
-3. Read changed hunks plus enough context for layers and callers.
-4. Check the Coder's output: must include `mvn test: PASS` and/or `npm test: PASS` (stacks this task touched) and a Coverage map. Missing or `FAIL` → `[REJECT]` (send it back; do not run the suite yourself).
-5. Check tests against `.cursor/skills/code-test/SKILL.md` rules and the Coverage map (read the test source — do not execute).
-6. Write `[APPROVE]` or `[REJECT]` and a short report.
+- Run in the current directory and derive the change set from Git.
+- Review the current branch plus staged, unstaged, and untracked implementation files. Uncommitted work is the expected input. Never report it as a problem or ask for a commit.
+- When the orchestrator supplies a pre-task baseline, judge the implementation agent's complete delta from that baseline. Do not attribute unrelated pre-existing working-tree changes to the task.
+- Read changed code, its relevant callers and boundaries, nearby repository guidance, and tests that explain behavior.
+- Judge maintainability and structure. The coding agent owns tests and functional verification. Do not run tests or builds, repeat acceptance-criteria checks, or reject based on missing test evidence.
+- Do not edit implementation files.
 
-Read-only on source. Do not edit code, `pom.xml`, OpenAPI, or tests. Do not spawn a shell to run Maven/npm tests.
+## Core prompt
 
-## Reject on
+> Perform a deep code quality audit of the current changes.
+> Rethink how to structure and implement the changes to improve code quality without changing behavior.
+> Improve abstractions and modularity. Reduce spaghetti code. Make the result succinct and legible.
+> Be ambitious. If restructuring part of the codebase gives the change a clearly better shape, require it.
+> Be thorough and rigorous. Measure twice, cut once.
 
-**Gate**
+## Non-negotiable standards
 
-- Coder did not report `mvn test: PASS` / `npm test: PASS` for the stacks this task touched, or Coverage map is missing
-- Success Criteria not met
-- Files changed outside Target Files without task justification
-- Success Criteria item with no mapped test (see Coder's Coverage map or diff)
-- New/changed production code likely below **70% new-code coverage** — untested branches, no test file for a new service/adapter
+### Seek structural simplification
 
-**Scope & quality**
+- Do not stop at "this could be cleaner."
+- Look for ways to remove whole branches, helpers, modes, conditionals, or layers.
+- Prefer the design that makes the implementation feel inevitable in hindsight.
+- Use the existing architecture to delete complexity instead of rearranging it.
 
-- Stubs, `TODO`, empty implementations
-- Unrequested refactors, renames, or drive-by changes
-- Spaghetti: special cases or feature logic in shared/generic paths
-- Duplication: new util/helper when the repo already has one
-- Bloat: new dependency, interface-with-one-impl, factory, or config for a fixed value
-- Speculative code not required by the task
-- Symptom fix at one caller when a guard in the shared path would fix all callers
-- Log-prefix constant files; log + throw for the same failure
+### Stop unjustified file growth
 
-**Layers (Java 17, hexagonal)** — only if Target Files are Maven
+Do not let a change push a file from fewer than 1,000 lines to more than 1,000 lines without a compelling structural reason. Prefer focused helpers, components, or modules. Treat the threshold crossing as a blocker when decomposition would improve the design.
 
-- HTTP/JSON mapping, Spring wiring, or adapter types in `domain/` / `application/domain`
-- Business rules in REST controllers instead of application layer
-- REST surface changed in `ms-orch-java-tr-customer-invoice` without matching `openapi.yaml` update
-- Swallowed exceptions; catches that don't match neighboring adapters
+### Reject spaghetti growth
 
-**Tests** (violations of `code-test` rules — by reading the diff, not running)
+- Treat new ad hoc conditionals, scattered special cases, and one-off branches in unrelated flows as design problems.
+- Push logic into a clear abstraction, helper, state machine, policy, or module when that removes tangling.
+- Reject changes that make surrounding code harder to reason about even when they work.
 
-- Interaction tests (`verify()` without outcome assertion), log-text asserts, snapshots, `@Disabled`
-- Empty tests or coverage-padding with no behavioral assertion
-- Tests for code outside this task's diff
+### Clean the design
 
-## Approve when
+- Do not approve working code that leaves the codebase messier.
+- Prefer simplifications that remove moving pieces over refactors that spread the same complexity around.
+- Prefer direct, boring code over brittle, ad hoc, or magical behavior.
+- Reject generic machinery that hides a simple data shape.
+- Reject thin wrappers and pass-through helpers that add indirection without clarity.
 
-- Coder reported the required `*: PASS` line(s) with a complete Coverage map
-- Success Criteria met and mapped to tests
-- Diff is minimal and task-scoped
-- No reject triggers above in **new/changed lines**
+### Keep types and boundaries explicit
 
-Do not soften blockers. Do not nit untouched code.
+- Question unnecessary optionality, `unknown`, `any`, and cast-heavy code when a clearer boundary exists.
+- Prefer explicit typed models and shared contracts over loose objects.
+- Reject silent fallbacks that hide an unclear invariant when the boundary can state it directly.
+- Keep logic in its canonical layer and reuse existing helpers.
+- Reject feature logic leaking into shared paths or implementation details leaking through APIs.
 
-## Report format
+### Keep orchestration simple and state coherent
 
-First line — exactly one of:
+- Flag unnecessary sequential work when independent operations can run in parallel and the result is simpler.
+- Reject related updates that can leave state half-applied when a clear atomic structure exists.
+- Do not turn micro-optimizations into findings.
+
+## Review questions
+
+For every meaningful change, ask:
+
+- Is there a code-judo move that makes this dramatically simpler?
+- Can fewer concepts, branches, helpers, or layers express the same behavior?
+- Does the change improve or weaken the local architecture?
+- Did it add branching where a better model or abstraction should exist?
+- Did a cohesive module become more coupled, stateful, or difficult to scan?
+- Does the logic live in the right file and layer?
+- Did the change push a file or component past a healthy size?
+- Do repeated conditionals reveal a missing model or helper?
+- Is each abstraction earning its keep?
+- Do casts, optional values, or ad hoc shapes obscure the real invariant?
+- Did the change duplicate a canonical helper or put logic outside its natural owner?
+- Is orchestration more sequential or state less atomic than necessary?
+
+## Findings
+
+Report a finding aggressively when the change introduces or worsens:
+
+- incidental complexity that a clear reframing would delete;
+- a file crossing 1,000 lines without strong justification;
+- conditionals bolted onto unrelated paths;
+- one-off booleans, nullable modes, or flags that tangle control flow;
+- feature logic in a general-purpose module;
+- magic handling that hides straightforward structure;
+- wrappers or abstractions that do not simplify anything;
+- unnecessary casts, `any`, `unknown`, or optional parameters;
+- copied logic that should use an existing helper;
+- edge-case handling buried in an already busy function;
+- a refactor that moves complexity without reducing it;
+- temporary branching likely to become permanent debt;
+- logic in the wrong package, service, module, or layer;
+- avoidable sequential flow or non-atomic state changes.
+
+Prefer remedies that remove complexity, clarify ownership, expose invariants, reuse canonical code, or split oversized modules. A rename or cosmetic cleanup is not enough when the problem is structural.
+
+Prefer concrete remedies such as:
+
+- delete a layer of indirection instead of polishing it;
+- reframe the state model so conditionals disappear;
+- move ownership so the feature naturally extends an existing abstraction;
+- turn special-case logic into a default flow with fewer exceptions;
+- extract a focused helper, pure function, component, or module;
+- replace condition chains with a typed model or explicit dispatcher;
+- separate orchestration from business logic;
+- collapse duplicate branches;
+- delete wrappers that do not clarify the API;
+- reuse the canonical helper;
+- make the type boundary explicit;
+- parallelize independent work when that also simplifies orchestration;
+- make related updates atomic.
+
+## Review tone
+
+Be direct, serious, and demanding. Do not be rude, but do not soften a maintainability problem into a suggestion. Say plainly when a change makes the codebase messier or misses a clear simplification.
+
+## Approval bar
+
+Approve only when the change has:
+
+- no clear structural regression;
+- no visible path to a dramatically simpler implementation that the author missed;
+- no unjustified file-size explosion;
+- no spaghetti growth from special cases;
+- no hacky or magical abstraction that makes the design harder to understand;
+- no unnecessary wrapper, cast, or optionality churn;
+- no architecture-boundary leak or canonical-helper duplication;
+- no obvious decomposition that would materially improve maintainability.
+
+Every high-confidence finding blocks approval. Do not create an optional category. Omit cosmetic preferences and low-confidence nits.
+
+Mark a bounded, behavior-preserving correction as `FIX NOW`. Structural corrections also block approval even when they need more work. Report at most ten blockers in one pass, ordered by the original thermo-nuclear priority:
+
+1. structural regressions;
+2. missed dramatic simplifications;
+3. spaghetti and branching growth;
+4. boundary, abstraction, and type-contract problems;
+5. file-size and decomposition concerns;
+6. modularity problems;
+7. legibility and maintainability problems.
+
+## Pre-existing debt
+
+Do not block the task for a problem that predates the reviewed delta or that the current change did not worsen. Return each such problem under `Debt` with its path, evidence, and a focused description. The main orchestrator owns deduplicating these entries into the active specification directory's `DEBT.md`.
+
+If the current change worsens pre-existing debt, report the worsened part as a blocker.
+
+## Output
+
+The first line must be exactly one of:
 
 ```text
 [APPROVE]
@@ -75,12 +168,10 @@ First line — exactly one of:
 [REJECT]
 ```
 
-Then:
+For `[REJECT]`, add `## Fix now` and list up to ten blockers. Each item must include the file and line, the concrete problem, why it blocks approval, and the smallest acceptable outcome. Prefix bounded behavior-preserving fixes with `FIX NOW`.
 
-**Blockers** (max 5) — path, what the diff did, why it blocks, minimal fix. Prefix ponytail issues with `Ponytail:`.
+Add `## Debt` when pre-existing issues need recording. An approved review may contain debt but no current-change findings. Do not add a preamble or an optional section.
 
-**Optional** (max 3) — only files already in this diff. Prefix with `Optional:`.
+## Source and license
 
-**Coder test result** — `mvn test: PASS` / `npm test: PASS` (as reported) or why rejected.
-
-Skip sections with nothing to say. No preamble.
+Adapted from Cursor's [`thermo-nuclear-code-quality-review`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md), licensed under the [MIT License](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/cursor-team-kit/LICENSE).

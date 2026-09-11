@@ -11,12 +11,13 @@ Adapt the installed rstack files in place. They belong to the user.
 
 1. Inspect the repository, every installed rstack skill and companion, adopted design concepts, and the host runtime's rule capabilities.
 2. Identify durable constraints or workflow decisions an agent cannot reliably infer from nearby files.
-3. Run `grill-me` to resolve material choices the repository cannot answer.
-4. For each adopted design concept, derive the repository files and artifacts it governs.
-5. Prepare one concise preview: affected files, evidence, material rewrites, and thin runtime-rule routers.
-6. Obtain one approval, then apply the full preview.
-7. Validate edited Markdown, skill names, dependencies, companion references, rule scopes, and concept links.
-8. After successful setup, ask whether the user wants to delete this one-time setup skill.
+3. When `tdd` is installed, discover how the repository measures line coverage for new and changed code. If it cannot enforce the 80% threshold, make the missing command or alternative a material `grill-me` decision and record the settled policy in the installed guidance.
+4. Run `grill-me` to resolve material choices the repository cannot answer.
+5. For each adopted design concept, derive the repository files and artifacts it governs.
+6. Prepare one concise preview: affected files, evidence, material rewrites, and thin runtime-rule routers.
+7. Obtain one approval, then apply the full preview.
+8. Validate edited Markdown, skill names, dependencies, companion references, rule scopes, and concept links.
+9. After successful setup, ask whether the user wants to delete this one-time setup skill.
 
 ## Editing rules
 

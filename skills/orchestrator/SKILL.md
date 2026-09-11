@@ -23,13 +23,14 @@ Read `PRD.md` header `Repo:`. Spawn `Task` with the named agents (`developer`, `
 | `mfe-part-tscript-tr-customer-invoice` | `developer` | **skip** | `npm test` |
 | `multiple` | `developer` per Target Files | **skip** | each affected repo |
 
-COMPLETED = code-reviewer `[APPROVE]` only. No dual UX approve.
+COMPLETED = code-reviewer `[APPROVE]` followed by a passing `docs-sync` result when the repository has an initialized OKF bundle. No dual UX approve.
 
 If a task spans the lib **and** a consumer, finish lib-touching work first.
 
 ## Allowed
 
-- Update `TASKS.md` / `STRUCTURAL_REEVAL.md` under `.cursor/Specs/**`
+- Update `TASKS.md`, `DEBT.md`, and `STRUCTURAL_REEVAL.md` under `.cursor/Specs/**`
+- Run `docs-sync` as the main orchestrator and edit the initialized OKF bundle
 - Spawn Task subagents (`developer`, `code-reviewer`, `build-validator`, `bug-reviewer`, `architecture-agent`)
 - Append smoke-fix tasks to `TASKS.md` from a `BUG_REPORT.md`
 - Read-only Grep/Glob/Read on the three `src/` trees
@@ -42,8 +43,8 @@ If a task spans the lib **and** a consumer, finish lib-touching work first.
 - COMPLETED without `[APPROVE]`
 - Parallel `developer` spawns; `resume` after `[REJECT]` — always **new** spawn
 - UX / device / client-developer agents
-- Separate Tester / test-engineer spawn — `developer` owns tests
-- `nuke` / `create-pr` (human-only)
+- Separate test-only agent spawns — `developer` owns tests through `tdd`
+- `create-pr` (human-only)
 
 ## Prerequisites
 
@@ -64,13 +65,15 @@ Relevant docs: audit/lib/composition → `.cursor/docs/audit/`; invoice → `.cu
 
 ## Per task
 
-1. **`developer`** — ponytail + code-test (java-pro only if Target Files are Maven). Implement + tests; run `mvn test` and/or `npm test` per `code-test`. **Do not spawn `code-reviewer` unless the coder reported the matching `*: PASS`.** End with Coverage map.
-2. **`code-reviewer`** — `.cursor/skills/code-review/SKILL.md`. Diff + Coverage map only — **do not re-run tests**. `[APPROVE]` or `[REJECT]`.
+1. **`developer`** — ponytail + tdd (java-pro only if Target Files are Maven). Establish the focused test or executable check before production changes, implement, and run the repository's configured validation. **Do not spawn `code-reviewer` unless the coder reports passing-after evidence and at least 80% new-and-changed-code coverage or the alternative established by `setup`.**
+2. **`code-reviewer`** — `.cursor/skills/code-review/SKILL.md`. Run the thermo-nuclear maintainability review from the repository's current Git state. Do not re-run tests. Return `[APPROVE]` or `[REJECT]`, a `Fix now` list when rejected, and any pre-existing `Debt`.
+3. **Main orchestrator** — append or deduplicate every returned debt item in the active specification directory's `DEBT.md`. Debt does not affect the verdict unless this task worsened it. On `[REJECT]`, spawn a new `developer` with the complete `Fix now` list, then run a fresh full review of the updated task delta. Never treat a blocker as optional.
+4. After `[APPROVE]`, the main orchestrator runs `docs-sync` when an initialized OKF bundle is present. Use the delivery baseline and include every repository code change, not only this task's Target Files. Mark the task `COMPLETED` only after synchronization and OKF validation pass. If review rejects the work, wait for the replacement implementation and approval before running `docs-sync`.
 
 ### Spawn prompt (`developer`)
 
 ```text
-Follow .cursor/skills/ponytail/SKILL.md and .cursor/skills/code-test/SKILL.md.
+Follow .cursor/skills/ponytail/SKILL.md and .cursor/skills/tdd/SKILL.md.
 If Target Files are Maven: also .cursor/skills/java-pro/SKILL.md (Java 17).
 No GraphQL.
 
@@ -83,18 +86,21 @@ Read (do not ask for pasted content):
 Target files:
 {{TARGET_FILE_LIST}}
 
-Implement production code and tests. Run mvn test and/or npm test per code-test before done.
+Establish the focused test or executable check before changing production code. Implement and verify per tdd before done.
 If tests fail, fix them — do not return FAIL to the orchestrator.
-End with Coverage map (Success Criteria → test names).
+End with failing-before evidence, passing-after evidence, coverage or the configured alternative, and the behavior-to-test map.
 ```
 
 ### Spawn prompt (`code-reviewer`)
 
 ```text
 Follow .cursor/skills/code-review/SKILL.md.
+Active specification: .cursor/Specs/{{FEATURE_SLUG}}
 ```
 
 ## After all tasks `COMPLETED`
+
+Run one final `docs-sync` audit when an initialized OKF bundle is present. Catch documentation effects that span tasks before integration verification.
 
 Spawn **`build-validator`**. It `mvn clean install`s touched Maven repos (lib first), **writes** `.cursor/Specs/<slug>/smoke/smoke.sh`, then **runs** it.
 

@@ -2,13 +2,13 @@
 name: developer
 model: gpt-5.6-luna[reasoning=xhigh,fast=false]
 description: >-
-  Implements one TASKS.md item. Always ponytail + code-test. Java also
+  Implements one TASKS.md item. Always ponytail + tdd. Java also
   java-pro. TS/React MFE uses colocated Jest specs.
 ---
 
 Implement **one** orchestrator task. You are not the reviewer.
 
-**Always** follow `.cursor/skills/ponytail/SKILL.md` and `.cursor/skills/code-test/SKILL.md`.
+**Always** follow `.cursor/skills/ponytail/SKILL.md` and `.cursor/skills/tdd/SKILL.md`.
 
 Route by **Target Files**:
 
@@ -26,6 +26,6 @@ Read (do not ask for pasted content): `PRD.md`, `ARCHITECTURE.md`, `INTEGRATION.
 ## Deliver
 
 - Every Success Criteria item — no stubs
-- Tests in the same pass per `code-test`; the suite **must pass**
+- Establish the focused test or executable check before production changes per `tdd`; required validation **must pass**
 - Fail → fix or stop. Never hand failing tests to the reviewer (they will not re-run)
-- End with Coverage map per `code-test` (`mvn test: PASS` and/or `npm test: PASS`)
+- End with the failing-before evidence, passing-after evidence, new-and-changed-code coverage or configured alternative, and behavior-to-test map required by `tdd`

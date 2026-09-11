@@ -70,7 +70,8 @@ All maintained skills will follow these conventions:
 
 | Skill | Purpose | Planned work |
 |---|---|---|
-| `ponytail` | Choose the smallest maintainable coding solution | Review wording and portability |
+| `ponytail` | Produce the least code that works without removing necessary safeguards | Refined; acceptance exercise remains |
+| `tdd` | Establish a useful executable check before production code changes | Initial skill created; acceptance exercise remains |
 | `lazy-plan` | Produce the smallest plan that safely unblocks work | Review wording and portability |
 | `unslop` | Remove generic AI writing patterns while preserving meaning and voice | Preserve behavior; add attribution |
 | `research` | Investigate primary sources and save cited findings | Make background delegation capability-aware; add attribution |
@@ -78,18 +79,16 @@ All maintained skills will follow these conventions:
 | `ask-me` | Explore a design through one dependent question at a time | Clarify its sequential contract |
 | `second-opinion` | Prepare an adversarial review of a completed plan or specification | Make referenced documents conditional |
 | `debug` | Diagnose runtime failures from evidence | Generalize evidence capture and project discovery |
-| `code-test` | Select and run tests that prove a task's behavior | Derive framework and commands from the host repository |
-| `code-review` | Review a task against intent, correctness, maintainability, and evidence | Redesign through a dedicated `ask-me` session before implementation |
+| `code-review` | Run a thermo-nuclear maintainability review of current Git changes | Rebuilt from Cursor's skill; acceptance exercise remains |
 | `create-pr` | Create a pull or merge request from the current repository state | Discover provider, target branch, template, and issue context |
 | `get-work-item` | Load an issue or card and turn it into a verified work brief | Generalize the current card-loading behavior and rename it |
-| `nuke` | Perform an explicit final maintainability audit | Ground checks in the host repository's standards |
 | `setup` | Adapt installed rstack skills to the host repository | Initial skill created; acceptance exercise remains |
 | `okf-setup` | Establish a focused OKF v0.2 knowledge bundle for the host repository | Initial skill created; acceptance exercise remains |
 | `create-adr` | Record or supersede a consequential architecture decision in the repository's OKF bundle | Initial skill created; acceptance exercise remains |
 | `add-design-reference` | Adopt actionable design guidance and generate scoped runtime-rule routers | Initial skill created; acceptance exercise remains |
 | `better-grep` | Search code efficiently using query planning, repository structure, and OKF | Complete |
 | `map-codebase` | Map approved repository sections in parallel for OKF synthesis and codebase navigation | Initial skill created; acceptance exercise remains |
-| `docs-sync` | Update affected OKF concepts after code changes | New skill |
+| `docs-sync` | Update affected OKF concepts after code changes | Initial skill created; acceptance exercise remains |
 | `fix-maven-vulnerabilities` | Remediate reported Maven dependency vulnerabilities without breaking dependency resolution or builds | Initial skill created; acceptance exercise remains |
 
 ## Optional planning and delivery pipeline
@@ -177,14 +176,15 @@ Adapt the installed rstack skills and their required companions to durable conve
 1. Inspect every installed rstack skill and companion alongside the repository.
 2. Discover repository guidance, architecture, workflows, and agent capabilities without relying on a fixed file list.
 3. Identify only durable exceptions or decisions an agent cannot reliably infer from nearby files.
-4. Run a `grill-me` session to resolve material choices that repository evidence cannot answer.
-5. Propose one concise preview listing affected files and material rewrites.
-6. Obtain one approval, then apply focused rewrites only to affected skills and companions.
-7. Preserve each skill's purpose, triggers, safety rules, attribution, unrelated local edits, and agent-agnostic behavior.
-8. Remove generic branches made irrelevant by proven repository constraints.
-9. Reference authoritative repository guidance when useful and inline only essential constraints.
-10. Validate the edited Markdown, names, dependencies, and companion references.
-11. After successful setup, ask whether the user wants to delete this one-time setup skill.
+4. When `tdd` is installed, discover how the repository measures line coverage for new and changed code. If it cannot enforce the 80% threshold, settle and record the alternative through `grill-me`.
+5. Run a `grill-me` session to resolve material choices that repository evidence cannot answer.
+6. Propose one concise preview listing affected files and material rewrites.
+7. Obtain one approval, then apply focused rewrites only to affected skills and companions.
+8. Preserve each skill's purpose, triggers, safety rules, attribution, unrelated local edits, and agent-agnostic behavior.
+9. Remove generic branches made irrelevant by proven repository constraints.
+10. Reference authoritative repository guidance when useful and inline only essential constraints.
+11. Validate the edited Markdown, names, dependencies, and companion references.
+12. After successful setup, ask whether the user wants to delete this one-time setup skill.
 
 The skill does not execute project builds or test commands. It edits agent guidance, not application code.
 
@@ -197,6 +197,7 @@ Treat current installed files as authoritative. Patch only instructions made sta
 - Only affected installed skills and companions change.
 - Every repository-specific instruction represents a durable exception or explicit user decision.
 - Skills remain concise and capable of discovering ordinary repository facts at runtime.
+- Installed TDD guidance records the repository's coverage command or its user-approved alternative.
 - Existing local changes outside the focused rewrite remain intact.
 - The user approves one preview before edits apply.
 - Re-running `setup` cleanly patches stale guidance.
@@ -280,15 +281,18 @@ Purpose: keep the repository's OKF bundle aligned with code changes.
 
 Workflow:
 
-1. Inspect the completed code change and identify affected concepts through resources, source paths, links, terminology, contracts, and behavior.
-2. Update existing concepts whose meaning, examples, lifecycle, provenance, or freshness changed.
-3. Create a concept only when the change introduces durable knowledge selected by the repository's OKF coverage policy.
-4. Update affected indexes and logs when the bundle uses them.
-5. Record accurate generation and verification metadata.
-6. Validate OKF conformance and links.
-7. Report changed concepts and code changes that require human verification.
+1. Have the main orchestrator run it after implementation passes focused tests and independent review, then run one final audit after all tasks.
+2. Inspect every added, modified, renamed, and deleted repository code change from the delivery baseline through the current working tree, including changes outside the current task.
+3. Include tracked generated, vendored, and build files. Exclude only disposable untracked or ignored output; use tests as behavioral evidence rather than documentation targets.
+4. Identify affected concepts through exact sources, links, terminology, contracts, behavior, invariants, and the bundle's coverage policy.
+5. Update only concepts whose current meaning or source references changed. Create concepts only for durable knowledge selected by the coverage policy.
+6. Keep concept bodies as present-tense descriptions of current code. Remove obsolete concepts and repair links and indexes instead of retaining deprecation or migration commentary.
+7. Update affected directory logs with concept creation, updates, moves, and removal.
+8. Set `generated.by` and `generated.at` on meaningful edits. Do not add or retain `verified` on touched concepts.
+9. Make evidence-supported decisions without human approval or review.
+10. Validate required metadata, reserved files, internal sources, concept links, and support for affected current-state claims.
 
-Integrate `docs-sync` into the completion path for code-changing tasks. A code change completes after the skill has either updated affected OKF concepts or established from the configured coverage policy that no OKF update is needed.
+A code change completes only after `docs-sync` has updated the affected OKF concepts or established from the configured coverage policy that no documentation update is needed.
 
 ## Agent roles
 
@@ -297,7 +301,7 @@ Keep generic, thin role definitions under `agents/`:
 | Agent | Contract |
 |---|---|
 | `developer` | Implement one task, follow host conventions, run focused verification, and report evidence |
-| `code-reviewer` | Review one task without editing implementation and return actionable approval or rejection |
+| `code-reviewer` | Apply the thermo-nuclear maintainability gate without editing implementation and return actionable approval or rejection |
 | `build-validator` | Run the host repository's integration build and smoke path and report exact outcomes |
 | `bug-reviewer` | Diagnose failed verification from evidence and produce a focused failure report |
 | `architecture-agent` | Create architecture and integration specifications from repository evidence |
@@ -355,7 +359,9 @@ Confirmed or likely sources to verify during implementation:
 - `unslop`: [cursor/plugins — `pstack/skills/unslop/SKILL.md`](https://github.com/cursor/plugins/blob/main/pstack/skills/unslop/SKILL.md)
 - `grill-me`: [mattpocock/skills — `batch-grill-me/SKILL.md`](https://github.com/mattpocock/skills/blob/main/skills/in-progress/batch-grill-me/SKILL.md)
 - `research`: compare the local file with [mattpocock/skills research workflow](https://github.com/mattpocock/skills/blob/main/docs/engineering/research.md) and record the exact upstream revision
-- ponytail (although I made changes to it)
+- `ponytail`: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT; rstack keeps its own permanent intensity and local coding rules
+- `tdd`: [cursor/plugins — `pstack/skills/tdd/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/pstack/skills/tdd/SKILL.md)
+- `code-review`: [cursor/plugins — `cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md)
 
 ## Repository validation
 
@@ -400,14 +406,15 @@ We will complete the work below together in order. Every task begins with an `as
    - Show one concise preview and obtain one approval before applying all edits.
    - On reruns, preserve current files and patch only stale instructions.
    - Adapt required skills, agents, templates, scripts, and rules under the same policy.
+   - Discover new-and-changed-code coverage tooling for `tdd`; when the repository cannot enforce 80%, settle and record an alternative through `grill-me`.
    - Perform Markdown and reference checks; do not run project builds or tests.
    - Ask after successful setup whether the user wants to delete the one-time skill.
 3. **Normalize skill routing descriptions — complete**
    - Use direct routing instructions of one to three sentences.
    - Use `MUST use` for mandatory matching activities, `Use when` for semantic triggers, and `Use only when` plus `disable-model-invocation: true` for human-only skills.
    - Keep routing positive; put procedures and feature summaries in the skill body.
-   - Require `unslop` for all user-facing prose, `ponytail` for coding, `lazy-plan` for planning, `better-grep` for codebase search, and `docs-sync` after code changes when OKF is installed.
-   - Keep `refine-specs`, `nuke`, and `create-pr` human-only.
+   - Require `unslop` for all user-facing prose, `ponytail` and `tdd` together for coding, `lazy-plan` for planning, `better-grep` for codebase search, and `docs-sync` after code changes when OKF is installed.
+   - Keep `refine-specs` and `create-pr` human-only.
    - Apply the convention to every current skill and document it in the README.
    - Apply the same convention when creating future skills and validate it during repository checks.
 4. **Design the `okf-setup` skill — complete**
@@ -467,14 +474,31 @@ We will complete the work below together in order. Every task begins with an `as
    - Match tools to query semantics: filename discovery for paths, language-server navigation for resolved symbols, structural search for syntax, and literal/regex search for text, configuration, and behavior.
    - Honor repository ignore rules and exclude generated, vendored, cache, and build output by default; widen into them only when evidence implicates them.
    - Stop when evidence closes the parent task's question across applicable callers, configuration, tests, and runtime boundaries; retain only the paths, symbols, decisive evidence, and unresolved uncertainty the calling task needs.
-10. **Design the `docs-sync` skill**
-    - Settle change detection, concept mapping, update thresholds, pipeline hook, trust metadata, and human-review cases.
-11. **Rebuild the `code-review` skill**
-    - Replace the current skill after an `ask-me` session defines review scope, evidence, severity, output, verification boundaries, and its relationship with `nuke`.
-12. **Refine standalone skills**
-    - Review `ponytail`, `lazy-plan`, `unslop`, `research`, `grill-me`, `ask-me`, `second-opinion`, and `debug` for purpose, portability, dependencies, and attribution.
+10. **Design the `docs-sync` skill — complete**
+    - Inspect every repository code change from a supplied delivery baseline, or discover the target branch merge base when no baseline is supplied.
+    - Include added, modified, renamed, and deleted repository-owned code, configuration, schemas, and scripts, including tracked generated, vendored, and build files.
+    - Exclude only disposable untracked or ignored output and use tests as behavioral evidence rather than documentation targets.
+    - Map changes through exact sources, links, terminology, contracts, behavior, invariants, and the bundle coverage policy.
+    - Update concepts only when their current meaning or source references require it; create concepts only for durable knowledge selected by policy.
+    - Keep concept bodies focused on current code, remove obsolete concepts, repair links and indexes, and retain history only in Git and `log.md`.
+    - Have the main orchestrator run synchronization after review approval and once more after all tasks.
+    - Maintain `generated.by` and `generated.at`, omit `verified`, and require no human review or approval.
+    - Complete only after the affected concepts are synchronized or ruled out by policy and OKF validation passes.
+11. **Rebuild the `code-review` skill — complete**
+    - Adapt Cursor's thermo-nuclear code-quality rubric as the single maintainability review gate.
+    - Derive the review from Git in the current directory, including branch, staged, unstaged, and untracked changes; never treat uncommitted work as a problem.
+    - Review the implementation agent's full task delta without attributing unrelated pre-existing changes to it.
+    - Keep tests, builds, functional acceptance, and implementation edits outside the reviewer's role.
+    - Make every high-confidence finding a blocker, mark bounded behavior-preserving corrections `FIX NOW`, omit optional findings, and cap each pass at ten blockers.
+    - Return `[APPROVE]` or `[REJECT]`, required fixes, and separately identified pre-existing debt.
+    - Have the main orchestrator route every blocker to a coding agent, rerun the full review, and deduplicate pre-existing debt into the active specification's `DEBT.md`.
+    - Preserve Cursor's MIT attribution at the vendored upstream revision.
+12. **Refine standalone skills — in progress**
+    - `ponytail` refined as a permanent YAGNI-extremist coding skill for building, fixing, and refactoring code. It preserves the local hardware and logging rules, forbids unnecessary comments, requires honest filenames, and always pairs with `tdd`.
+    - `tdd` owns testing. It establishes a useful test or executable check before production changes, avoids over-testing, requires 80% line coverage of new and changed code when configured, and defers missing coverage-tool policy to `setup`.
+    - Remaining: review `lazy-plan`, `unslop`, `research`, `grill-me`, `ask-me`, `second-opinion`, and `debug` for purpose, portability, dependencies, and attribution.
 13. **Refine delivery skills**
-    - Generalize `code-test`, `create-pr`, `get-work-item`, and `nuke` around repository discovery and `setup` configuration.
+    - Generalize `create-pr` and `get-work-item` around repository discovery and `setup` configuration.
 14. **Refine the issue-to-delivery pipeline**
     - Align `planner`, `refine-specs`, `create-tasks`, and `orchestrator` around one existing task or issue per specification directory.
 15. **Refine generic agent roles**
