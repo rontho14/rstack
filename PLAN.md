@@ -75,6 +75,7 @@ All maintained skills will follow these conventions:
 | `lazy-plan` | Produce the smallest plan that safely unblocks work | Review wording and portability |
 | `unslop` | Remove generic AI writing patterns while preserving meaning and voice | Preserve behavior; add attribution |
 | `research` | Investigate primary sources and save cited findings | Make background delegation capability-aware; add attribution |
+| `to-theory` | Reframe a concrete technical problem as a known theoretical problem and present source-backed options for the user to choose | Initial skill created; acceptance exercise remains |
 | `grill-me` | Stress-test an idea through rounds of independent decisions | Preserve frontier-based rounds; add attribution |
 | `ask-me` | Explore a design through one dependent question at a time | Clarify its sequential contract |
 | `second-opinion` | Prepare an adversarial review of a completed plan or specification | Make referenced documents conditional |
@@ -202,6 +203,51 @@ Treat current installed files as authoritative. Patch only instructions made sta
 - The user approves one preview before edits apply.
 - Re-running `setup` cleanly patches stale guidance.
 - The skill offers to delete itself after successful setup.
+
+## `to-theory` skill
+
+### Purpose
+
+Strip business terminology and personal context from a technical or engineering-organization problem, identify the known problem class it belongs to, and present the approaches established theory and practice use for it. The user makes the decision; the skill never recommends an option.
+
+### Workflow
+
+1. Run only when the user explicitly invokes `/to-theory`.
+2. Accept technical and engineering-organization problems: software and system design, delivery, and team-process problems with established theory. Decline personal, product-only, and business-only decisions instead of forcing a theory onto them.
+3. Read the pasted material and the code it points to directly, following references as far as needed, to extract the parameters that could change the choice, such as payload size, frequency of the special case, round-trip cost, and component ownership.
+4. Present the theory gate and wait:
+   - a *user term → abstract role* mapping table;
+   - the abstract problem statement and its known problem class, briefly explained;
+   - the decision parameters, each marked found (with its source) or unknown;
+   - questions only for unknown parameters that could change the choice.
+5. Correct the framing, mapping, and parameters until the user confirms them.
+6. Hand the confirmed abstract problem to `research`, which saves a cited note in the repository's research location. The note contains only abstract theory: no user terms, mapping, or parameter values.
+7. Present at most five options. Admit an option only when a primary source describes it, its mechanism differs from every other listed option, and it violates no confirmed invariant. Fold variants into their parent option. Flag options that exceed the user's current scope or ownership instead of dropping them. Never pad the list.
+8. For each option, give its mechanism, cost profile, when it wins, risks, and links to its sources in the note. Close with decision criteria showing which parameters discriminate between options and how the confirmed parameters score against them. Recommend no option.
+9. After the user chooses, translate the chosen option back through the confirmed mapping into a short brief with the user's terms, affected components or files, the invariant protected, and done criteria. Then stop; do not plan or implement.
+10. Offer `create-adr` in one line only when the decision is large (it sets repo-wide or cross-component direction) and `create-adr` is installed. Code changes and feature-local implementation decisions get no ADR offer.
+
+Dependencies: `research`; optionally `create-adr`.
+
+Routing: human-only through `Use only when` and `disable-model-invocation: true`.
+
+### Acceptance
+
+Exercise the skill with neutral, invented cases:
+
+- a technical case, such as a lookup that returns one item when some items must be handled as a whole set whose membership is visible only after the lookup;
+- an engineering-organization case, such as releases slipping while review requests pile up;
+- an out-of-scope personal or business-only decision.
+
+The exercise passes when:
+
+- the gate shows the mapping table and waits for confirmation before research starts;
+- the research note contains no terms from the input;
+- every option has a primary source and a distinct mechanism, with at most five listed;
+- no option is recommended;
+- the translate-back uses only confirmed terms;
+- the ADR offer appears only for a large decision;
+- the out-of-scope case is declined.
 
 ## OKF knowledge layer
 
@@ -522,6 +568,18 @@ We will complete the work below together in order. Every task begins with an `as
     - Try other safe, guidance-listed candidates when a fix fails. If every safe candidate requires application-code changes, revert that dependency change, leave other verified fixes in place, stop without editing application code, and report the remaining vulnerable coordinate and failure evidence.
     - Complete only when every unblocked finding resolves to a guidance-listed safe version in the Maven graph and the full build passes. A `pom.xml` edit alone and vulnerability-scanner execution are not completion evidence.
     - The skill owns concise companion guidance derived from the research note, including input parsing, candidate evaluation, safety boundaries, retained evidence, loop invariants, stopping conditions, and an acceptance exercise.
+
+21. **Design the `to-theory` skill — initial skill created; acceptance exercise remains**
+    - Use only by explicit human invocation.
+    - Accept technical and engineering-organization problems; decline personal, product-only, and business-only decisions.
+    - Read the pasted material and referenced code directly to find decision parameters; ask only about unknown parameters that could change the choice.
+    - Stop at a theory gate that shows the term mapping, abstract problem, problem class, and parameters; research only after the user confirms.
+    - Delegate primary-source research to `research`; keep the saved note abstract and free of user terms and parameter values.
+    - Present at most five source-backed, mechanically distinct options that respect confirmed invariants; flag scope-exceeding options and never pad the list.
+    - Give decision criteria and parameter scoring but no recommendation; the decision belongs to the user.
+    - Translate the chosen option back through the confirmed mapping into a short brief, then stop.
+    - Offer `create-adr` only for large, repo-wide or cross-component decisions.
+    - Accept through neutral technical, engineering-organization, and out-of-scope cases.
 
 The future project-inception skill is tracked as a product boundary, not implemented in this plan. It will turn a new project idea into initial tasks or issues that can enter this pipeline.
 
