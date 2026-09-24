@@ -72,6 +72,7 @@ All maintained skills will follow these conventions:
 |---|---|---|
 | `ponytail` | Produce the least code that works without removing necessary safeguards | Refined; acceptance exercise remains |
 | `tdd` | Establish a useful executable check before production code changes | Initial skill created; acceptance exercise remains |
+| `test-audit` | Gate new tests and audit or prune low-value, duplicative, or implementation-coupled tests | Adapted from OpenClaw; acceptance exercise remains |
 | `lazy-plan` | Produce the smallest plan that safely unblocks work | Review wording and portability |
 | `unslop` | Remove generic AI writing patterns while preserving meaning and voice | Preserve behavior; add attribution |
 | `research` | Investigate primary sources and save cited findings | Make background delegation capability-aware; add attribution |
@@ -407,6 +408,7 @@ Confirmed or likely sources to verify during implementation:
 - `research`: compare the local file with [mattpocock/skills research workflow](https://github.com/mattpocock/skills/blob/main/docs/engineering/research.md) and record the exact upstream revision
 - `ponytail`: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT; rstack keeps its own permanent intensity and local coding rules
 - `tdd`: [cursor/plugins — `pstack/skills/tdd/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/pstack/skills/tdd/SKILL.md)
+- `test-audit`: [openclaw/openclaw — `.agents/skills/test-audit`](https://github.com/openclaw/openclaw/tree/5050eb796c4ec58f301cf20fd5269e506a257c8d/.agents/skills/test-audit), MIT; verbatim copy in `vendor/openclaw`
 - `code-review`: [cursor/plugins — `cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md)
 
 ## Repository validation
