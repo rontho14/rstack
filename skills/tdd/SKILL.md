@@ -19,6 +19,8 @@ A new unit test is useful when it:
 
 Do not add a unit test for trivial delegation, declarations, generated code, framework behavior, private implementation details, or an already-covered outcome. Reject tests dominated by mocks, timing, broad infrastructure, unrelated fixtures, or setup churn.
 
+Before landing a new or changed test, pass it through the authoring gate in `test-audit` when it is installed.
+
 When a useful unit test is unavailable, choose the cheapest executable check that can catch the likely failure. Use the coverage-tool decision recorded by `setup`; do not invent a new dependency or policy during implementation.
 
 ## Workflow
