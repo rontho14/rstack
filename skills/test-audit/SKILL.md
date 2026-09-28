@@ -93,7 +93,7 @@ Discover the repository's test, format, lint, and changed-file gate commands fro
 3. Run targeted formatting, then `git diff --check`.
 4. Run the changed-file gate the repository requires.
 5. Inspect `git diff --numstat`; report production and tooling separately from tests and test support.
-6. After the final audit edits, run `code-review` when it is installed.
+6. After the final audit edits, run `code-judo` when it is installed.
 
 ## Landing and continuation
 

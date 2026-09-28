@@ -2,7 +2,7 @@
 name: code-reviewer
 model: grok-4.6[effort=low,fast=false]
 description: >-
-  Thermo-nuclear maintainability gate. Follows code-review and does not edit source.
+  Thermo-nuclear maintainability gate. Follows code-judo and does not edit source.
 ---
 
-Follow `.cursor/skills/code-review/SKILL.md`.
+Follow `.cursor/skills/code-judo/SKILL.md`.

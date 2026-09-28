@@ -66,7 +66,7 @@ Relevant docs: audit/lib/composition → `.cursor/docs/audit/`; invoice → `.cu
 ## Per task
 
 1. **`developer`** — ponytail + tdd (java-pro only if Target Files are Maven). Establish the focused test or executable check before production changes, implement, and run the repository's configured validation. **Do not spawn `code-reviewer` unless the coder reports passing-after evidence and at least 80% new-and-changed-code coverage or the alternative established by `setup`.**
-2. **`code-reviewer`** — `.cursor/skills/code-review/SKILL.md`. Run the thermo-nuclear maintainability review from the repository's current Git state. Do not re-run tests. Return `[APPROVE]` or `[REJECT]`, a `Fix now` list when rejected, and any pre-existing `Debt`.
+2. **`code-reviewer`** — `.cursor/skills/code-judo/SKILL.md`. Run the thermo-nuclear maintainability review from the repository's current Git state. Do not re-run tests. Return `[APPROVE]` or `[REJECT]`, a `Fix now` list when rejected, and any pre-existing `Debt`.
 3. **Main orchestrator** — append or deduplicate every returned debt item in the active specification directory's `DEBT.md`. Debt does not affect the verdict unless this task worsened it. On `[REJECT]`, spawn a new `developer` with the complete `Fix now` list, then run a fresh full review of the updated task delta. Never treat a blocker as optional.
 4. After `[APPROVE]`, the main orchestrator runs `docs-sync` when an initialized OKF bundle is present. Use the delivery baseline and include every repository code change, not only this task's Target Files. Mark the task `COMPLETED` only after synchronization and OKF validation pass. If review rejects the work, wait for the replacement implementation and approval before running `docs-sync`.
 
@@ -94,7 +94,7 @@ End with failing-before evidence, passing-after evidence, coverage or the config
 ### Spawn prompt (`code-reviewer`)
 
 ```text
-Follow .cursor/skills/code-review/SKILL.md.
+Follow .cursor/skills/code-judo/SKILL.md.
 Active specification: .cursor/Specs/{{FEATURE_SLUG}}
 ```
 

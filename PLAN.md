@@ -81,7 +81,7 @@ All maintained skills will follow these conventions:
 | `ask-me` | Explore a design through one dependent question at a time | Clarify its sequential contract |
 | `second-opinion` | Prepare an adversarial review of a completed plan or specification | Make referenced documents conditional |
 | `debug` | Diagnose runtime failures from evidence | Generalize evidence capture and project discovery |
-| `code-review` | Run a thermo-nuclear maintainability review of current Git changes | Rebuilt from Cursor's skill; acceptance exercise remains |
+| `code-judo` | Run a thermo-nuclear maintainability review of uncommitted changes | Rebuilt from Cursor's skill; acceptance exercise remains |
 | `create-pr` | Create a pull or merge request from the current repository state | Discover provider, target branch, template, and issue context |
 | `get-work-item` | Load an issue or card and turn it into a verified work brief | Generalize the current card-loading behavior and rename it |
 | `setup` | Adapt installed rstack skills to the host repository | Initial skill created; acceptance exercise remains |
@@ -409,7 +409,7 @@ Confirmed or likely sources to verify during implementation:
 - `ponytail`: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT; rstack keeps its own permanent intensity and local coding rules
 - `tdd`: [cursor/plugins — `pstack/skills/tdd/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/pstack/skills/tdd/SKILL.md)
 - `test-audit`: [openclaw/openclaw — `.agents/skills/test-audit`](https://github.com/openclaw/openclaw/tree/5050eb796c4ec58f301cf20fd5269e506a257c8d/.agents/skills/test-audit), MIT; verbatim copy in `vendor/openclaw`
-- `code-review`: [cursor/plugins — `cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md)
+- `code-judo`: [cursor/plugins — `cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md)
 
 ## Repository validation
 
@@ -532,14 +532,15 @@ We will complete the work below together in order. Every task begins with an `as
     - Have the main orchestrator run synchronization after review approval and once more after all tasks.
     - Maintain `generated.by` and `generated.at`, omit `verified`, and require no human review or approval.
     - Complete only after the affected concepts are synchronized or ruled out by policy and OKF validation passes.
-11. **Rebuild the `code-review` skill — complete**
-    - Adapt Cursor's thermo-nuclear code-quality rubric as the single maintainability review gate.
-    - Derive the review from Git in the current directory, including branch, staged, unstaged, and untracked changes; never treat uncommitted work as a problem.
-    - Review the implementation agent's full task delta without attributing unrelated pre-existing changes to it.
-    - Keep tests, builds, functional acceptance, and implementation edits outside the reviewer's role.
-    - Make every high-confidence finding a blocker, mark bounded behavior-preserving corrections `FIX NOW`, omit optional findings, and cap each pass at ten blockers.
-    - Return `[APPROVE]` or `[REJECT]`, required fixes, and separately identified pre-existing debt.
-    - Have the main orchestrator route every blocker to a coding agent, rerun the full review, and deduplicate pre-existing debt into the active specification's `DEBT.md`.
+11. **Rebuild the maintainability review as `code-judo` — complete**
+    - Adapt Cursor's thermo-nuclear code-quality rubric as the single maintainability review gate, named `code-judo` to avoid clashing with host built-in `code-review` commands.
+    - Run whenever the user or an agent asks for a code review; assume no orchestrator.
+    - Review only the uncommitted diff (staged, unstaged, and untracked files) before commit; never treat uncommitted work as a problem.
+    - Keep tests, builds, functional acceptance, and all edits outside the reviewer's role.
+    - Keep review rules language-neutral.
+    - Report findings without weighing justifications; the caller decides which findings to accept.
+    - Mark bounded behavior-preserving corrections `FIX NOW`, omit optional findings, and cap each pass at ten blockers.
+    - Return `[APPROVE]` or `[REJECT]`, required fixes, and separately identified pre-existing debt; the caller decides whether to record debt. The orchestrator routes blockers to a coding agent and deduplicates debt into the active specification's `DEBT.md`.
     - Preserve Cursor's MIT attribution at the vendored upstream revision.
 12. **Refine standalone skills — in progress**
     - `ponytail` refined as a permanent YAGNI-extremist coding skill for building, fixing, and refactoring code. It preserves the local hardware and logging rules, forbids unnecessary comments, requires honest filenames, and always pairs with `tdd`.

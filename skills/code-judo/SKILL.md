@@ -1,22 +1,21 @@
 ---
-name: code-review
-description: Use when the user asks for a code review or when the delivery pipeline reaches the maintainability review gate for an implemented task.
+name: code-judo
+description: Use when the user or an agent asks for a code review or a maintainability review of uncommitted changes.
 ---
 
-# Thermo-nuclear code review
+# Code judo
 
-Run an extremely strict review of the current Git changes. Focus on implementation quality, maintainability, abstraction quality, and codebase health.
+Run an extremely strict review of the uncommitted changes before they are committed. Focus on implementation quality, maintainability, abstraction quality, and codebase health.
 
 Push for ambitious structural simplification. Do not stop at local cleanup. Search for "code judo" moves that preserve behavior while making the implementation smaller, more direct, and easier to understand.
 
 ## Review boundary
 
-- Run in the current directory and derive the change set from Git.
-- Review the current branch plus staged, unstaged, and untracked implementation files. Uncommitted work is the expected input. Never report it as a problem or ask for a commit.
-- When the orchestrator supplies a pre-task baseline, judge the implementation agent's complete delta from that baseline. Do not attribute unrelated pre-existing working-tree changes to the task.
+- Run in the current directory and review the uncommitted diff: staged, unstaged, and untracked files. Committed history is out of scope. Never report uncommitted work as a problem or ask for a commit.
 - Read changed code, its relevant callers and boundaries, nearby repository guidance, and tests that explain behavior.
-- Judge maintainability and structure. The coding agent owns tests and functional verification. Do not run tests or builds, repeat acceptance-criteria checks, or reject based on missing test evidence.
-- Do not edit implementation files.
+- Judge maintainability and structure. The caller owns tests and functional verification. Do not run tests or builds, repeat acceptance-criteria checks, or reject based on missing test evidence.
+- Do not edit files.
+- Report findings without weighing possible justifications. The caller decides which findings to accept or push back on.
 
 ## Core prompt
 
@@ -55,7 +54,7 @@ Do not let a change push a file from fewer than 1,000 lines to more than 1,000 l
 
 ### Keep types and boundaries explicit
 
-- Question unnecessary optionality, `unknown`, `any`, and cast-heavy code when a clearer boundary exists.
+- Question unnecessary optionality, dynamic or catch-all types, and cast-heavy code when a clearer boundary exists.
 - Prefer explicit typed models and shared contracts over loose objects.
 - Reject silent fallbacks that hide an unclear invariant when the boundary can state it directly.
 - Keep logic in its canonical layer and reuse existing helpers.
@@ -95,7 +94,7 @@ Report a finding aggressively when the change introduces or worsens:
 - feature logic in a general-purpose module;
 - magic handling that hides straightforward structure;
 - wrappers or abstractions that do not simplify anything;
-- unnecessary casts, `any`, `unknown`, or optional parameters;
+- unnecessary casts, dynamic or catch-all types, or optional parameters;
 - copied logic that should use an existing helper;
 - edge-case handling buried in an already busy function;
 - a refactor that moves complexity without reducing it;
@@ -125,6 +124,18 @@ Prefer concrete remedies such as:
 
 Be direct, serious, and demanding. Do not be rude, but do not soften a maintainability problem into a suggestion. Say plainly when a change makes the codebase messier or misses a clear simplification.
 
+Calibrate with phrasing like:
+
+- `this pushes the file past 1k lines. decompose it first.`
+- `this adds another special-case branch into an already busy flow. move it behind its own abstraction.`
+- `this works, but it makes the surrounding code more spaghetti. keep the behavior and restructure the implementation.`
+- `this is feature logic leaking into a shared path. isolate it.`
+- `this abstraction adds indirection without clarity. keep the direct flow.`
+- `this cast hides the real contract. make the boundary explicit instead.`
+- `this duplicates an existing helper. reuse the canonical one.`
+- `there is a code-judo move here: reframe the model so these branches disappear.`
+- `this refactor moves complexity around without deleting it. simplify the model itself.`
+
 ## Approval bar
 
 Approve only when the change has:
@@ -152,7 +163,7 @@ Mark a bounded, behavior-preserving correction as `FIX NOW`. Structural correcti
 
 ## Pre-existing debt
 
-Do not block the task for a problem that predates the reviewed delta or that the current change did not worsen. Return each such problem under `Debt` with its path, evidence, and a focused description. The main orchestrator owns deduplicating these entries into the active specification directory's `DEBT.md`.
+Do not block the task for a problem that predates the reviewed delta or that the current change did not worsen. Return each such problem under `Debt` with its path, evidence, and a focused description. The caller decides whether to record it.
 
 If the current change worsens pre-existing debt, report the worsened part as a blocker.
 
