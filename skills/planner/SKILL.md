@@ -19,9 +19,9 @@ Only when the user **explicitly** invokes this skill or asks for planning / pre-
 |--------|---------|
 | Create `.cursor/Specs/NNN-feature-slug/` | Yes |
 | Write **initial** `PRD.md` once (include `Repo:`) | Yes |
-| Spawn `architecture-agent` | **Required** |
+| Write `ARCHITECTURE.md` and, when needed, `INTEGRATION.md` | **Required** |
 
-Forbidden after the agent returns: editing PRD/ARCH/DESIGN/INTEGRATION. Always forbidden: `src/` under any of the three repos. Do not spawn coders.
+Forbidden after Phase 1: editing PRD/ARCH/DESIGN/INTEGRATION. Always forbidden: `src/` under any of the three repos. Do not spawn coders.
 
 ## Repos
 
@@ -47,7 +47,7 @@ Forbidden after the agent returns: editing PRD/ARCH/DESIGN/INTEGRATION. Always f
 > **Spec path:** `.cursor/Specs/NNN-feature-slug/`
 ```
 
-5. Spawn **`architecture-agent`** via `Task` (`subagent_type: architecture-agent`). It follows `lazy-plan`. Write only under the spec folder. No `src/` edits.
+5. Write the architecture documents yourself, following `lazy-plan`. Write only under the spec folder. No `src/` edits.
    - `ARCHITECTURE.md` — modules, hexagonal layers, package/file naming table, Java 17 / Maven constraints.
    - `INTEGRATION.md` — **only** when the feature spans repos, OpenAPI/Feign/HTTP contracts, or the lib is consumed by a MS. OpenAPI lives at `src/main/resources/openapi.yaml` in the two microservices.
    - Cite `.cursor/skills/java-pro/SKILL.md`. Baseline is **Java 17**, not 21+.
@@ -55,18 +55,18 @@ Forbidden after the agent returns: editing PRD/ARCH/DESIGN/INTEGRATION. Always f
 
 6. **Skip `ui-designer`.** No UI in this workspace. Omit `DESIGN.md` unless the operator explicitly asks for one (then N/A sections only — still no UI agent).
 
-7. Wait. Do **not** edit PRD/ARCH/DESIGN/INTEGRATION after the agent returns.
+7. Stop. Do **not** edit PRD/ARCH/DESIGN/INTEGRATION after Phase 1.
 
 ## Phase 1.5
 
-Summarize paths. HALT. Tell the operator to invoke **`refinar-specs`**. Do not mention orchestrator or create-tasks yet.
+Summarize paths. HALT. Tell the operator to invoke **`refinar-specs`**. Do not mention create-tasks or implement yet.
 
 ## Self-check
 
-- [ ] `architecture-agent` spawned?
+- [ ] `ARCHITECTURE.md` written?
 - [ ] `Repo:` on PRD.md (one of the four slugs above)?
 - [ ] No ui-designer / no invented frontend?
-- [ ] No edits to PRD/ARCH/DESIGN/INTEGRATION after the agent?
+- [ ] No edits to PRD/ARCH/DESIGN/INTEGRATION after Phase 1?
 - [ ] Told operator **refinar-specs**?
 - [ ] No writes under any repo's `src/`?
 
@@ -74,8 +74,7 @@ Summarize paths. HALT. Tell the operator to invoke **`refinar-specs`**. Do not m
 
 - `.cursor/skills/refinar-specs/SKILL.md`
 - `.cursor/skills/create-tasks/SKILL.md`
-- `.cursor/skills/orchestrator/SKILL.md`
+- `.cursor/skills/implement/SKILL.md`
 - `.cursor/skills/get-card/SKILL.md`
 - `.cursor/skills/lazy-plan/SKILL.md`
 - `.cursor/skills/java-pro/SKILL.md`
-- `.cursor/agents/architecture-agent.md`

@@ -19,7 +19,7 @@ Load documents in this order (skip files that don't exist yet):
 | 2 | `ARCHITECTURE.md` | Modules, paths, data flow, constraints |
 | 3 | `DESIGN.md` | Layout, states, tokens, testIDs, copy |
 | 4 | `INTEGRATION.md` | External contracts (BFF, WebView, APIs) |
-| 5 | `TASKS.md` | Implementation breakdown (if present — post-refine / pre-orchestrator) |
+| 5 | `TASKS.md` | Implementation breakdown (if present — post-refine / pre-implement) |
 
 Also grab context the spec references when relevant: linked ADRs in `docs/adr/`, kanban items in `docs/roadmap/items/`, and the original user request if it's not captured in `PRD.md`.
 

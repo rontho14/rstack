@@ -1,17 +1,18 @@
 ---
 name: code-judo
-description: Use when the user or an agent asks for a code review or a maintainability review of uncommitted changes.
+description: Use when the user or an agent asks for a code review or a maintainability review of uncommitted changes or of changes since a base ref.
+argument-hint: "[base ref]"
 ---
 
 # Code judo
 
-Run an extremely strict review of the uncommitted changes before they are committed. Focus on implementation quality, maintainability, abstraction quality, and codebase health.
+Run an extremely strict review of the changes in scope. Focus on implementation quality, maintainability, abstraction quality, and codebase health.
 
 Push for ambitious structural simplification. Do not stop at local cleanup. Search for "code judo" moves that preserve behavior while making the implementation smaller, more direct, and easier to understand.
 
 ## Review boundary
 
-- Run in the current directory and review the uncommitted diff: staged, unstaged, and untracked files. Committed history is out of scope. Never report uncommitted work as a problem or ask for a commit.
+- Run in the current directory. Without an argument, review the uncommitted diff: staged, unstaged, and untracked files. With a base ref, review every change from that ref through the working tree. Ignore earlier history. Never report uncommitted work as a problem or ask for a commit.
 - Read changed code, its relevant callers and boundaries, nearby repository guidance, and tests that explain behavior.
 - Judge maintainability and structure. The caller owns tests and functional verification. Do not run tests or builds, repeat acceptance-criteria checks, or reject based on missing test evidence.
 - Do not edit files.

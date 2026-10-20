@@ -11,9 +11,9 @@ Do not initialize an OKF bundle. When `docs/index.md` does not declare an OKF bu
 
 ## Ownership and timing
 
-The main orchestrator runs this skill after implementation has passed focused tests and independent review. Individual implementation and review agents do not run it. The orchestrator runs it again after all tasks to catch effects that span tasks.
+Run this skill after a code-changing task is complete. `implement` does not run it.
 
-Do not request a preview, approval, or human review. Finish the synchronization before the orchestrator marks the task complete.
+Do not request a preview, approval, or human review.
 
 ## Establish the change set
 

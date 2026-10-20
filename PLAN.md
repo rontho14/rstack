@@ -10,7 +10,6 @@ rstack contains:
 
 - standalone skills for focused jobs;
 - an optional planning and delivery pipeline;
-- reusable agent roles used by that pipeline;
 - lightweight specification templates;
 - a `setup` skill that configures the installed collection for its host repository.
 
@@ -81,7 +80,7 @@ All maintained skills will follow these conventions:
 | `ask-me` | Explore a design through one dependent question at a time | Clarify its sequential contract |
 | `second-opinion` | Prepare an adversarial review of a completed plan or specification | Make referenced documents conditional |
 | `debug` | Diagnose runtime failures from evidence | Generalize evidence capture and project discovery |
-| `code-judo` | Run a thermo-nuclear maintainability review of uncommitted changes | Rebuilt from Cursor's skill; acceptance exercise remains |
+| `code-judo` | Run a thermo-nuclear maintainability review of uncommitted changes or changes since a base ref | Rebuilt from Cursor's skill; acceptance exercise remains |
 | `create-pr` | Create a pull or merge request from the current repository state | Discover provider, target branch, template, and issue context |
 | `get-work-item` | Load an issue or card and turn it into a verified work brief | Generalize the current card-loading behavior and rename it |
 | `setup` | Adapt installed rstack skills to the host repository | Initial skill created; acceptance exercise remains |
@@ -104,7 +103,7 @@ refine-specs
    ↓
 create-tasks
    ↓
-orchestrator
+implement
 ```
 
 `ask-me`, `grill-me`, and `second-opinion` remain standalone. A user may invoke them before, during, or after specification work.
@@ -153,19 +152,23 @@ Responsibilities:
 
 Task categories come from the feature and host repository rather than a fixed technology list.
 
-### `orchestrator`
+### `implement`
 
 Responsibilities:
 
-1. select the next dependency-ready task;
-2. assign or perform implementation;
-3. require focused verification evidence;
-4. run an independent review when the runtime supports suitable agents;
-5. route rejected work back for correction;
-6. update `TASKS.md` after each completed gate;
-7. run final integration verification after all tasks are complete.
-
-The orchestration contract remains stable whether one agent performs the roles sequentially or the runtime provides separate agents.
+1. run only when the user explicitly invokes it;
+2. stop when the working tree is dirty, otherwise record `HEAD` as the feature base;
+3. take an existing `TASKS.md`, or treat a request described in conversation as one task;
+4. implement each task itself in dependency order, following `ponytail`, `tdd`, the `test-audit` authoring gate, `code-judo`'s standards, and repository patterns;
+5. write no comments beyond text the repository or toolchain requires, use self-explanatory names, and never reference the specification in code, tests, file names, or commit messages;
+6. require `tdd` completion evidence before each review;
+7. review each task with a fresh subagent whose entire prompt is `Run /code-judo.`, without adding specification, diff summaries, explanations, or earlier findings;
+8. triage findings itself: accept code-quality findings by default and reject only findings that contradict a recorded decision, with a one-line reason;
+9. loop until the latest review is `[APPROVE]` or holds only reasoned rejections; mark the task `BLOCKED` and stop when a finding returns after two rounds of fixes;
+10. ignore review debt unless it is worth fixing, then fold it into the next task;
+11. mark the task `COMPLETED` in `TASKS.md` and commit it with its code;
+12. after the last task, run the full build and test suite, then run the same review loop with `Run /code-judo <feature base>.` and commit its fixes separately;
+13. report completed and blocked tasks, commits, rejected findings with reasons, and verification results.
 
 ## `setup` skill
 
@@ -328,7 +331,7 @@ Purpose: keep the repository's OKF bundle aligned with code changes.
 
 Workflow:
 
-1. Have the main orchestrator run it after implementation passes focused tests and independent review, then run one final audit after all tasks.
+1. Run it after a code-changing task completes. `implement` does not run it.
 2. Inspect every added, modified, renamed, and deleted repository code change from the delivery baseline through the current working tree, including changes outside the current task.
 3. Include tracked generated, vendored, and build files. Exclude only disposable untracked or ignored output; use tests as behavioral evidence rather than documentation targets.
 4. Identify affected concepts through exact sources, links, terminology, contracts, behavior, invariants, and the bundle's coverage policy.
@@ -338,22 +341,6 @@ Workflow:
 8. Set `generated.by` and `generated.at` on meaningful edits. Do not add or retain `verified` on touched concepts.
 9. Make evidence-supported decisions without human approval or review.
 10. Validate required metadata, reserved files, internal sources, concept links, and support for affected current-state claims.
-
-A code change completes only after `docs-sync` has updated the affected OKF concepts or established from the configured coverage policy that no documentation update is needed.
-
-## Agent roles
-
-Keep generic, thin role definitions under `agents/`:
-
-| Agent | Contract |
-|---|---|
-| `developer` | Implement one task, follow host conventions, run focused verification, and report evidence |
-| `code-reviewer` | Apply the thermo-nuclear maintainability gate without editing implementation and return actionable approval or rejection |
-| `build-validator` | Run the host repository's integration build and smoke path and report exact outcomes |
-| `bug-reviewer` | Diagnose failed verification from evidence and produce a focused failure report |
-| `architecture-agent` | Create architecture and integration specifications from repository evidence |
-
-Agent definitions refer to skills by name. Model selection remains a host-runtime concern.
 
 ## Specification templates
 
@@ -529,18 +516,18 @@ We will complete the work below together in order. Every task begins with an `as
     - Map changes through exact sources, links, terminology, contracts, behavior, invariants, and the bundle coverage policy.
     - Update concepts only when their current meaning or source references require it; create concepts only for durable knowledge selected by policy.
     - Keep concept bodies focused on current code, remove obsolete concepts, repair links and indexes, and retain history only in Git and `log.md`.
-    - Have the main orchestrator run synchronization after review approval and once more after all tasks.
+    - Run synchronization after a code-changing task completes; `implement` does not run it.
     - Maintain `generated.by` and `generated.at`, omit `verified`, and require no human review or approval.
     - Complete only after the affected concepts are synchronized or ruled out by policy and OKF validation passes.
 11. **Rebuild the maintainability review as `code-judo` — complete**
     - Adapt Cursor's thermo-nuclear code-quality rubric as the single maintainability review gate, named `code-judo` to avoid clashing with host built-in `code-review` commands.
-    - Run whenever the user or an agent asks for a code review; assume no orchestrator.
-    - Review only the uncommitted diff (staged, unstaged, and untracked files) before commit; never treat uncommitted work as a problem.
+    - Run whenever the user or an agent asks for a code review; assume no caller workflow.
+    - Review the uncommitted diff (staged, unstaged, and untracked files) by default, or every change since a caller-supplied base ref; never treat uncommitted work as a problem.
     - Keep tests, builds, functional acceptance, and all edits outside the reviewer's role.
     - Keep review rules language-neutral.
     - Report findings without weighing justifications; the caller decides which findings to accept.
     - Mark bounded behavior-preserving corrections `FIX NOW`, omit optional findings, and cap each pass at ten blockers.
-    - Return `[APPROVE]` or `[REJECT]`, required fixes, and separately identified pre-existing debt; the caller decides whether to record debt. The orchestrator routes blockers to a coding agent and deduplicates debt into the active specification's `DEBT.md`.
+    - Return `[APPROVE]` or `[REJECT]`, required fixes, and separately identified pre-existing debt; the caller decides what to do with debt. `implement` ignores debt unless it is worth fixing.
     - Preserve Cursor's MIT attribution at the vendored upstream revision.
 12. **Refine standalone skills — in progress**
     - `ponytail` refined as a permanent YAGNI-extremist coding skill for building, fixing, and refactoring code. It preserves the local hardware and logging rules, forbids unnecessary comments, requires honest filenames, and always pairs with `tdd`.
@@ -549,9 +536,14 @@ We will complete the work below together in order. Every task begins with an `as
 13. **Refine delivery skills**
     - Generalize `create-pr` and `get-work-item` around repository discovery and `setup` configuration.
 14. **Refine the issue-to-delivery pipeline**
-    - Align `planner`, `refine-specs`, `create-tasks`, and `orchestrator` around one existing task or issue per specification directory.
-15. **Refine generic agent roles**
-    - Settle the contracts for developer, reviewer, validator, bug investigator, and architecture roles.
+    - Align `planner`, `refine-specs`, `create-tasks`, and `implement` around one existing task or issue per specification directory.
+15. **Replace `orchestrator` with `implement` — initial skill created; acceptance exercise remains**
+    - Implement tasks directly instead of delegating to developer, validator, bug investigator, and architecture agent roles; remove `agents/`.
+    - Gate each task with a fresh `code-judo` subagent whose prompt is only `Run /code-judo.` and triage findings with a product view while staying strict on code quality.
+    - Pass a task when no accepted finding remains; escalate to the user when a finding returns after two rounds of fixes.
+    - Commit each passing task with its `TASKS.md` update; review the whole feature against the recorded base commit after a full build and test run.
+    - Drop smoke scripts, `DEBT.md`, structural re-evaluation, and per-task `docs-sync`.
+    - Run only by explicit human invocation.
 16. **Design specification templates**
     - Finalize the minimal content and creation rules for `PRD.md`, `ARCHITECTURE.md`, `DESIGN.md`, and `INTEGRATION.md`.
 17. **Verify attribution and licenses**
@@ -584,6 +576,10 @@ We will complete the work below together in order. Every task begins with an `as
     - Offer `create-adr` only for large, repo-wide or cross-component decisions.
     - Accept through neutral technical, engineering-organization, and out-of-scope cases.
 
+22. **Redesign `docs-sync` around documentation changes**
+    - Code is the authoritative documentation of behavior; `docs-sync` stops reading code to verify concepts.
+    - Run whenever documentation changes and keep the rest of the OKF bundle consistent with that change.
+
 The future project-inception skill is tracked as a product boundary, not implemented in this plan. It will turn a new project idea into initial tasks or issues that can enter this pipeline.
 
 ## Completion criteria
@@ -592,7 +588,7 @@ The future project-inception skill is tracked as a product boundary, not impleme
 - Every maintained skill has a documented purpose and valid Agent Skills structure.
 - Every skill description tells the model when to load the skill and contains no procedure better kept in the skill body.
 - `setup` configures installed skills from evidence in the host repository.
-- The planning pipeline takes one existing task or issue through specifications, implementation tasks, review, documentation sync, and final verification.
+- The planning pipeline takes one existing task or issue through specifications, implementation tasks, review, and final verification.
 - `ask-me`, `grill-me`, and `second-opinion` remain independently invocable.
 - All cross-skill and companion-file references resolve.
 - The four specification templates are usable.
@@ -600,7 +596,7 @@ The future project-inception skill is tracked as a product boundary, not impleme
 - Repository validation passes.
 - `okf-setup` produces a focused, conformant OKF v0.2 bundle after a `grill-me` session.
 - `better-grep` uses OKF to narrow searches and verifies findings against the repository.
-- `docs-sync` keeps affected OKF concepts aligned with code changes.
+- `docs-sync` keeps the OKF bundle consistent when documentation changes.
 - `fix-maven-vulnerabilities` uses researched remediation practice to remove reported vulnerable Maven resolutions and proves the resulting dependency graph and relevant build behavior.
 - Every collaborative implementation task begins with a completed `ask-me` session.
 - A clean installation, adaptation run, and end-to-end pipeline exercise succeed.

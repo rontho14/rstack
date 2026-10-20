@@ -127,7 +127,7 @@ Do NOT create tasks for:
 
 ## Task body template
 
-Fill the canonical orchestrator shape (matches `specs/_templates/TASKS.md`):
+Fill the canonical task shape (matches `specs/_templates/TASKS.md`):
 
 ```markdown
 ## Task N: {imperative verb + what}
@@ -146,5 +146,5 @@ Fill the canonical orchestrator shape (matches `specs/_templates/TASKS.md`):
 ```
 
 Then close `TASKS.md` with the dependency graph and status table from the template. Leave
-`Status: PENDING` and `Review Rejections: 0` untouched — the `feature-orchestrator` owns
+`Status: PENDING` and `Review Rejections: 0` untouched — `implement` owns
 those fields once the build starts.

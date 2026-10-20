@@ -10,7 +10,7 @@ argument-hint: "Path to spec directory (e.g. specs/005-extensive-scan)"
 Phase 2 of the Dmitri document-driven pipeline. You read the **human-approved flat
 Peirce specs** and write **`TASKS.md` as a file** in the spec directory. You do **not**
 implement application code and you do **not** create harness tasks — `TASKS.md` is the
-ledger the **`feature-orchestrator`** drives.
+ledger **`implement`** drives.
 
 ## Pipeline position
 
@@ -18,11 +18,11 @@ ledger the **`feature-orchestrator`** drives.
 /feature-planning  → flat specs written → [human approval gate]
 /refine-specs      → optional grilling before approval
 /create-tasks      → writes specs/NNN-…/TASKS.md   ← you are here
-/feature-orchestrator → runs the per-task Coder → Reviewer loop on TASKS.md
+/implement         → runs the per-task implement → code-judo loop on TASKS.md
 ```
 
-`feature-orchestrator`'s Phase 2 expects a `TASKS.md` in the spec dir. This skill writes
-it. (If `/create-tasks` is skipped, the orchestrator writes the same shape inline.)
+`implement` reads a `TASKS.md` from the spec dir. This skill writes it. (If `/create-tasks`
+is skipped, `implement` treats the request as a single task.)
 
 ## Inputs
 
@@ -121,7 +121,7 @@ config/constants → discovery/pipeline → normalization (ScanPayload) → TUI 
 ### 5. Write TASKS.md
 
 Write **`specs/NNN-feature-slug/TASKS.md`** by copying `specs/_templates/TASKS.md` and
-filling it in. Each task uses the canonical orchestrator shape:
+filling it in. Each task uses the canonical task shape:
 
 ```markdown
 ## Task N: {Task name}
@@ -135,7 +135,7 @@ filling it in. Each task uses the canonical orchestrator shape:
 - **Review Rejections**: 0
 ```
 
-`Absorbed` and `Tests` are additive — the orchestrator reads `Status` and `Review Rejections`
+`Absorbed` and `Tests` are additive — `implement` writes `Status` and `Review Rejections`
 and ignores the rest, so adding them breaks nothing.
 
 Then add the **dependency graph** and the **status table** (see the template). Header
@@ -143,13 +143,13 @@ line: `{N} tasks. **Unblocked now: #…**`.
 
 - Every `Target Files` path must come from the `ARCHITECTURE.md` naming table or
   `DESIGN.md` — do not invent paths.
-- Every task starts `Status: PENDING` and `Review Rejections: 0` — the orchestrator owns
+- Every task starts `Status: PENDING` and `Review Rejections: 0` — `implement` owns
   these fields from here on; don't pre-fill statuses.
 
 ### 6. Name the pre-review gate when the feature is not Python
 
-The developer owns production code and tests through `ponytail` and `tdd`. The reviewer does
-not rerun the gate. When the feature's blast radius is not the Python layers, state the
+`implement` owns production code and tests through `ponytail` and `tdd`. The `code-judo`
+reviewer does not rerun the gate. When the feature's blast radius is not the Python layers, state the
 pre-review command at the top of `TASKS.md`:
 
 | Blast radius | Pre-review gate |
@@ -169,7 +169,7 @@ bypass `ScanOrchestrator.run()`, so a parameter that isn't threaded reaches no T
 
 Print the path you wrote and a short summary: total task count, parallel tracks, which tasks
 are **unblocked now**, and — when step 3 merged anything — what was absorbed and into what.
-Then tell the operator the next step is **`/feature-orchestrator`**.
+Then tell the operator the next step is **`/implement`**.
 
 ## Rules
 
@@ -185,15 +185,14 @@ Then tell the operator the next step is **`/feature-orchestrator`**.
   justify it, because it means the reviewer has nothing but greps to gate on.
 - **Never create tasks for out-of-scope items** marked "out of scope (v1)", "deferred", or
   "not v1" in `PRD.md` / `decisions/`, or anything in `open-questions/`.
-- **Do not create a smoke-script or install-gate task.** `build-validator` writes and runs
-  `.cursor/Specs/<slug>/smoke/smoke.sh` after all implementation tasks. Smoke-fix tasks are
-  appended later by the orchestrator from `BUG_REPORT.md`.
-- **Don't overwrite a TASKS.md the orchestrator is already driving** — if one exists with
+- **Do not create a smoke-script or install-gate task.** `implement` runs the full build and
+  test suite after the last task.
+- **Don't overwrite a TASKS.md `implement` is already driving** — if one exists with
   non-`PENDING` statuses or `Review Rejections > 0`, stop and confirm before regenerating.
 - **Aim for 6–12 tasks; hard cap ~15.** If decomposition yields more, merge related atoms —
   step 3 usually removes the overflow on its own. Under-splitting is recoverable (the coder
-  does more in one pass); over-splitting is not, because every extra task is three agent
-  invocations spent whether or not it earned them.
+  does more in one pass); over-splitting is not, because every extra task is a full review
+  loop spent whether or not it earned one.
 
 ## Depth
 
