@@ -91,6 +91,7 @@ All maintained skills will follow these conventions:
 | `map-codebase` | Map approved repository sections in parallel for OKF synthesis and codebase navigation | Initial skill created; acceptance exercise remains |
 | `docs-sync` | Update affected OKF concepts after code changes | Initial skill created; acceptance exercise remains |
 | `fix-maven-vulnerabilities` | Remediate reported Maven dependency vulnerabilities without breaking dependency resolution or builds | Initial skill created; acceptance exercise remains |
+| `fix-node-vulnerabilities` | Remediate reported npm, pnpm, or Yarn dependency vulnerabilities without breaking dependency resolution or builds | Initial skill created; acceptance exercise remains |
 
 ## Optional planning and delivery pipeline
 
@@ -596,6 +597,7 @@ The future project-inception skill is tracked as a product boundary, not impleme
 - `better-grep` uses OKF to narrow searches and verifies findings against the repository.
 - `docs-sync` keeps the OKF bundle consistent when documentation changes.
 - `fix-maven-vulnerabilities` uses researched remediation practice to remove reported vulnerable Maven resolutions and proves the resulting dependency graph and relevant build behavior.
+- `fix-node-vulnerabilities` removes reported vulnerable Node package resolutions through dependency-only changes and proves the resulting dependency graph and full build.
 - Every collaborative implementation task begins with a completed `ask-me` session.
 - A clean installation, adaptation run, and end-to-end pipeline exercise succeed.
 
