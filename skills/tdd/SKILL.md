@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: MUST use together with `ponytail` for every task that builds, fixes, or refactors code. Also use when the user asks to add, change, or improve tests.
+description: MUST use for every task that builds, fixes, or refactors code. Also use when the user asks to add, change, or improve tests.
 license: MIT
 ---
 
@@ -19,8 +19,6 @@ A new unit test is useful when it:
 
 Do not add a unit test for trivial delegation, declarations, generated code, framework behavior, private implementation details, or an already-covered outcome. Reject tests dominated by mocks, timing, broad infrastructure, unrelated fixtures, or setup churn.
 
-Before landing a new or changed test, pass it through the authoring gate in `test-audit` when it is installed.
-
 When a useful unit test is unavailable, choose the cheapest executable check that can catch the likely failure. Use the coverage-tool decision recorded by `setup`; do not invent a new dependency or policy during implementation.
 
 ## Workflow
@@ -28,13 +26,14 @@ When a useful unit test is unavailable, choose the cheapest executable check tha
 1. Read the task, affected code, nearby tests, and repository test commands and conventions.
 2. State the observable behavior that the check must protect.
 3. Choose an existing test, a new focused test, or the closest executable check using the usefulness rules above.
-4. Before editing production code:
+4. When the check is a new or changed test, pass it through the authoring gate in `test-audit` when it is installed.
+5. Before editing production code:
    - for a bug fix or new behavior, write and run the focused check and confirm that it fails for the intended reason;
    - for a refactor, run the existing focused tests first; when they do not pin the behavior, add a characterization test before refactoring.
-5. Apply `ponytail` and make the smallest production change that satisfies the check.
-6. Rerun the focused check and confirm it passes.
-7. Run adjacent tests, type checks, lint, or integration checks only when the changed boundary makes them relevant.
-8. Measure coverage using the repository policy established by `setup`.
+6. Make the smallest production change that satisfies the check.
+7. Rerun the focused check and confirm it passes.
+8. Run adjacent tests, type checks, lint, or integration checks only when the changed boundary makes them relevant.
+9. Measure coverage using the repository policy established by `setup`.
 
 If a new test passes before the production change or fails for an unrelated reason, fix the test or choose a better check before coding. Never change a test merely to accept wrong behavior, weaken a valid assertion, or hide a regression.
 

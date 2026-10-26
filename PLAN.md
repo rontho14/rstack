@@ -11,7 +11,8 @@ rstack contains:
 - standalone skills for focused jobs;
 - an optional planning and delivery pipeline;
 - lightweight specification templates;
-- a `setup` skill that configures the installed collection for its host repository.
+- a `setup` skill that configures the installed collection for its host repository;
+- an `AGENTS.md` of coding rules that apply to every task that builds, fixes, or refactors code.
 
 Each skill owns one clear behavior. Skills may compose other skills through documented names and contracts.
 
@@ -69,7 +70,6 @@ All maintained skills will follow these conventions:
 
 | Skill | Purpose | Planned work |
 |---|---|---|
-| `ponytail` | Produce the least code that works without removing necessary safeguards | Refined; acceptance exercise remains |
 | `tdd` | Establish a useful executable check before production code changes | Initial skill created; acceptance exercise remains |
 | `test-audit` | Gate new tests and audit or prune low-value, duplicative, or implementation-coupled tests | Adapted from OpenClaw; acceptance exercise remains |
 | `lazy-plan` | Produce the smallest plan that safely unblocks work | Review wording and portability |
@@ -159,8 +159,8 @@ Responsibilities:
 1. run only when the user explicitly invokes it;
 2. stop when the working tree is dirty, otherwise record `HEAD` as the feature base;
 3. take an existing `TASKS.md`, or treat a request described in conversation as one task;
-4. implement each task itself in dependency order, following `ponytail`, `tdd`, the `test-audit` authoring gate, `code-judo`'s standards, and repository patterns;
-5. write no comments beyond text the repository or toolchain requires, use self-explanatory names, and never reference the specification in code, tests, file names, or commit messages;
+4. implement each task itself in dependency order, following `AGENTS.md`, `tdd`, the `test-audit` authoring gate, and `code-judo`'s standards;
+5. never reference the specification in code, tests, file names, or commit messages;
 6. require `tdd` completion evidence before each review;
 7. review each task with a fresh subagent whose entire prompt is `Run /code-judo.`, without adding specification, diff summaries, explanations, or earlier findings;
 8. triage findings itself: accept code-quality findings by default and reject only findings that contradict a recorded decision, with a one-line reason;
@@ -216,7 +216,7 @@ Strip business terminology and personal context from a technical or engineering-
 
 ### Workflow
 
-1. Run only when the user explicitly invokes `/to-theory`.
+1. Run when the user invokes `/to-theory`, or when an agent following `AGENTS.md` finds no repository pattern that settles how to build something.
 2. Accept technical and engineering-organization problems: software and system design, delivery, and team-process problems with established theory. Decline personal, product-only, and business-only decisions instead of forcing a theory onto them.
 3. Read the pasted material and the code it points to directly, following references as far as needed, to extract the parameters that could change the choice, such as payload size, frequency of the special case, round-trip cost, and component ownership.
 4. Present the theory gate and wait:
@@ -233,7 +233,7 @@ Strip business terminology and personal context from a technical or engineering-
 
 Dependencies: `research`; optionally `create-adr`.
 
-Routing: human-only through `Use only when` and `disable-model-invocation: true`.
+Routing: model-invocable through `Use when`.
 
 ### Acceptance
 
@@ -393,7 +393,6 @@ Confirmed or likely sources to verify during implementation:
 - `unslop`: [cursor/plugins — `pstack/skills/unslop/SKILL.md`](https://github.com/cursor/plugins/blob/main/pstack/skills/unslop/SKILL.md)
 - `grill-me`: [mattpocock/skills — `batch-grill-me/SKILL.md`](https://github.com/mattpocock/skills/blob/main/skills/in-progress/batch-grill-me/SKILL.md)
 - `research`: compare the local file with [mattpocock/skills research workflow](https://github.com/mattpocock/skills/blob/main/docs/engineering/research.md) and record the exact upstream revision
-- `ponytail`: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT; rstack keeps its own permanent intensity and local coding rules
 - `tdd`: [cursor/plugins — `pstack/skills/tdd/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/pstack/skills/tdd/SKILL.md)
 - `test-audit`: [openclaw/openclaw — `.agents/skills/test-audit`](https://github.com/openclaw/openclaw/tree/5050eb796c4ec58f301cf20fd5269e506a257c8d/.agents/skills/test-audit), MIT; verbatim copy in `vendor/openclaw`
 - `code-judo`: [cursor/plugins — `cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md)
@@ -448,7 +447,7 @@ We will complete the work below together in order. Every task begins with an `as
    - Use direct routing instructions of one to three sentences.
    - Use `MUST use` for mandatory matching activities, `Use when` for semantic triggers, and `Use only when` plus `disable-model-invocation: true` for human-only skills.
    - Keep routing positive; put procedures and feature summaries in the skill body.
-   - Require `unslop` for all user-facing prose, `ponytail` and `tdd` together for coding, `lazy-plan` for planning, `better-grep` for codebase search, and `docs-sync` after code changes when OKF is installed.
+   - Require `unslop` for all user-facing prose, `tdd` for coding, `lazy-plan` for planning, `better-grep` for codebase search, and `docs-sync` after code changes when OKF is installed.
    - Keep `refine-specs` and `create-pr` human-only.
    - Apply the convention to every current skill and document it in the README.
    - Apply the same convention when creating future skills and validate it during repository checks.
@@ -530,7 +529,6 @@ We will complete the work below together in order. Every task begins with an `as
     - Return `[APPROVE]` or `[REJECT]`, required fixes, and separately identified pre-existing debt; the caller decides what to do with debt. `implement` ignores debt unless it is worth fixing.
     - Preserve Cursor's MIT attribution at the vendored upstream revision.
 12. **Refine standalone skills — in progress**
-    - `ponytail` refined as a permanent YAGNI-extremist coding skill for building, fixing, and refactoring code. It preserves the local hardware and logging rules, forbids unnecessary comments, requires honest filenames, and always pairs with `tdd`.
     - `tdd` owns testing. It establishes a useful test or executable check before production changes, avoids over-testing, requires 80% line coverage of new and changed code when configured, and defers missing coverage-tool policy to `setup`.
     - Remaining: review `lazy-plan`, `unslop`, `research`, `grill-me`, `ask-me`, `second-opinion`, and `debug` for purpose, portability, dependencies, and attribution.
 13. **Refine delivery skills**
@@ -565,7 +563,7 @@ We will complete the work below together in order. Every task begins with an `as
     - The skill owns concise companion guidance derived from the research note, including input parsing, candidate evaluation, safety boundaries, retained evidence, loop invariants, stopping conditions, and an acceptance exercise.
 
 21. **Design the `to-theory` skill — initial skill created; acceptance exercise remains**
-    - Use only by explicit human invocation.
+    - Run on human invocation, or when an agent following `AGENTS.md` finds no repository pattern that settles how to build something.
     - Accept technical and engineering-organization problems; decline personal, product-only, and business-only decisions.
     - Read the pasted material and referenced code directly to find decision parameters; ask only about unknown parameters that could change the choice.
     - Stop at a theory gate that shows the term mapping, abstract problem, problem class, and parameters; research only after the user confirms.
@@ -610,3 +608,4 @@ The future project-inception skill is tracked as a product boundary, not impleme
 - Which git providers `create-pr` supports in its first portable revision.
 - The minimum runtime capabilities rstack promises beyond the Agent Skills file format.
 - Whether an adapted skill records its local changes inside the host repository or only in the adaptation report.
+- How installation merges rstack's `AGENTS.md` into a host repository that already has one.

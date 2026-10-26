@@ -1,7 +1,6 @@
 ---
 name: to-theory
-description: Use only when the user explicitly invokes to-theory to reframe a concrete technical or engineering-organization problem as a known theoretical problem and compare source-backed options.
-disable-model-invocation: true
+description: Use when the user invokes to-theory, or when no existing repository pattern settles how to build something, to reframe a concrete technical or engineering-organization problem as a known theoretical problem and compare source-backed options.
 ---
 
 # To Theory

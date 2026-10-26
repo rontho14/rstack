@@ -135,9 +135,6 @@ Lazy-plan governs what you plan and how much you document, not how you
 talk. "stop lazy-plan" reverts. Level persists until changed or session
 end.
 
-Ponytail governs code; lazy-plan governs plans. Use both when a task spans
-planning and implementation — lazy plan first, ponytail when coding.
-
 Second-opinion stress-tests a finished plan; lazy-plan writes a small one.
 Refinar-specs and grill-me interrogate assumptions; lazy-plan defaults to
 fewer assumptions on the page.

@@ -18,10 +18,7 @@ Implement the requested work yourself, one task at a time. Gate every task behin
 
 ## Write the code
 
-- Follow `ponytail` and `tdd`.
-- Follow the repository's existing patterns, layering, naming, and canonical helpers.
-- Write no comments. When code seems to need one, rename or restructure it instead. Write only the comment text the repository or its toolchain requires: license headers, doc comments its lint or conventions demand, and tool directives.
-- Name functions, variables, types, files, and tests so they explain themselves.
+- Follow `AGENTS.md` and `tdd`.
 - Never reference the specification, task numbers, or planning text in code, tests, identifiers, file names, or commit messages. Describe the behavior itself.
 
 ## Per task

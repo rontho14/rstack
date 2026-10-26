@@ -148,7 +148,7 @@ line: `{N} tasks. **Unblocked now: #…**`.
 
 ### 6. Name the pre-review gate when the feature is not Python
 
-`implement` owns production code and tests through `ponytail` and `tdd`. The `code-judo`
+`implement` owns production code and tests through `tdd`. The `code-judo`
 reviewer does not rerun the gate. When the feature's blast radius is not the Python layers, state the
 pre-review command at the top of `TASKS.md`:
 
