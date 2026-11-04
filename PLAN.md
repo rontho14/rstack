@@ -78,7 +78,7 @@ All maintained skills will follow these conventions:
 | `to-theory` | Reframe a concrete technical problem as a known theoretical problem and present source-backed options for the user to choose | Initial skill created; acceptance exercise remains |
 | `grill-me` | Stress-test an idea through rounds of independent decisions | Preserve frontier-based rounds; add attribution |
 | `ask-me` | Explore a design through one dependent question at a time | Clarify its sequential contract |
-| `second-opinion` | Prepare an adversarial review of a completed plan or specification | Make referenced documents conditional |
+| `second-opinion` | Review a finished plan or vision adversarially in a fresh subagent, check it against the code, and propose a different approach through `to-theory` | Initial skill created; acceptance exercise remains |
 | `debug` | Diagnose runtime failures from evidence | Generalize evidence capture and project discovery |
 | `code-judo` | Run a thermo-nuclear maintainability review of uncommitted changes or changes since a base ref | Rebuilt from Cursor's skill; acceptance exercise remains |
 | `create-pr` | Create a pull or merge request from the current repository state | Discover provider, target branch, template, and issue context |
@@ -531,7 +531,7 @@ We will complete the work below together in order. Every task begins with an `as
     - Preserve Cursor's MIT attribution at the vendored upstream revision.
 12. **Refine standalone skills — in progress**
     - `tdd` owns testing. It establishes a useful test or executable check before production changes, avoids over-testing, requires 80% line coverage of new and changed code when configured, and defers missing coverage-tool policy to `setup`.
-    - Remaining: review `lazy-plan`, `unslop`, `research`, `grill-me`, `ask-me`, `second-opinion`, and `debug` for purpose, portability, dependencies, and attribution.
+    - Remaining: review `lazy-plan`, `unslop`, `research`, `grill-me`, `ask-me`, and `debug` for purpose, portability, dependencies, and attribution.
 13. **Refine delivery skills**
     - Generalize `create-pr` and `get-work-item` around repository discovery and `setup` configuration.
 14. **Refine the issue-to-delivery pipeline**

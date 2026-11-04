@@ -1,91 +1,90 @@
 ---
 name: second-opinion
-description: Use when the user asks for an independent or adversarial review of a finished plan or specification before implementation.
+description: Use when the user asks for an independent or adversarial review of a finished plan or vision before implementation. Not for reviewing written code.
 ---
 
 # Second Opinion
 
-A plan reviewed by the model that wrote it inherits that model's blind spots. This skill is the **prompt you send to a separate LLM** — paste it (with the spec files) into whatever model you use for an independent review. No dispatch, no reviewer selection: the prompt below *is* the second opinion.
+A plan reviewed by the agent that wrote it inherits that agent's context and blind spots. Hand the plan to a fresh reviewer that argues against it, checks it against the code, and proposes a different approach. The user decides what changes.
 
-## 1. Locate the plan (spec structure)
+Work through the stages in order. Each stage ends with a check. Do not move to the next stage until the check holds.
 
-Find the spec folder under `.omp/Specs/NNN-feature-name/`. If more than one candidate exists, ask which one — don't guess.
+## 1. Gather the plan
 
-Load documents in this order (skip files that don't exist yet):
+Resolve the plan in this order and stop at the first that applies:
 
-| Order | File | Role |
-|-------|------|------|
-| 1 | `PRD.md` | Scope, stories, acceptance criteria, open questions, decisions |
-| 2 | `ARCHITECTURE.md` | Modules, paths, data flow, constraints |
-| 3 | `DESIGN.md` | Layout, states, tokens, testIDs, copy |
-| 4 | `INTEGRATION.md` | External contracts (BFF, WebView, APIs) |
-| 5 | `TASKS.md` | Implementation breakdown (if present — post-refine / pre-implement) |
+1. what the user names: a path, folder, link, or pasted text;
+2. the plan or vision produced or discussed in the current conversation; say which one;
+3. specification folders under `.claude/` and `.cursor/`.
 
-Also grab context the spec references when relevant: linked ADRs in `docs/adr/`, kanban items in `docs/roadmap/items/`, and the original user request if it's not captured in `PRD.md`.
+When more than one candidate remains, ask which one. Never guess.
 
-**Completion:** you have the full spec package (at minimum `PRD.md` + whatever sibling files exist), not a paraphrase or subset.
+Collect every document the plan consists of and every document, decision record, or work item it references.
 
----
+**Check:** you hold the full plan, not a paraphrase or subset, and can list its documents.
 
-## 2. Send this prompt to your second-opinion LLM
+## 2. Run the review
 
-Copy the block below verbatim. Replace `[SPEC_FOLDER]` with the folder name (e.g. `006-pulso-grid-tryon`). Attach or paste the spec file contents after the prompt.
+Spawn a fresh subagent. Use the model the user names; otherwise use the current conversation's model. Its entire prompt is the [review prompt](#review-prompt) with the plan's location filled in, or the plan's text when it lives only in the conversation. Add nothing: no summary, expectation, or defense of the plan.
+
+**Check:** the reviewer returned a report with every category and a verdict.
+
+## 3. Show the review
+
+Show the user the reviewer's report exactly as returned. Do not summarize, filter, or rebut it.
+
+**Check:** the user has seen the unedited report.
+
+## 4. Triage with the user
+
+Walk through the findings one at a time. Give each one state:
+
+- **Accepted**: the plan changes.
+- **Rejected**: record the user's reason.
+- **Deferred**: the plan stays unchanged for now.
+
+When the user chooses an alternative approach, write the `to-theory` translate-back brief for it in the plan's terms and have the user confirm the brief before editing.
+
+**Check:** every finding has a state.
+
+## 5. Edit what was accepted
+
+Edit the plan's documents only for accepted findings and confirmed briefs. Touch only the sections they affect.
+
+**Check:** every edit maps to an accepted finding or a confirmed brief.
+
+## 6. Report
+
+List every finding with its state: what was edited for each accepted finding, the reason for each rejection, and each deferred finding.
+
+## Review prompt
 
 ```markdown
 You are reviewing someone else's plan, not your own. You have no stake in it looking good.
 
-## Spec under review
+Plan: [PLAN_LOCATION_OR_TEXT]
 
-Folder: `.omp/Specs/[SPEC_FOLDER]/`
+Read every document of the plan and everything it references. Read the code it describes or depends on. Do not edit any file.
 
-Documents attached (in pipeline order):
-- PRD.md — scope, stories, acceptance criteria
-- ARCHITECTURE.md — modules, paths, data flow
-- DESIGN.md — layout, states, tokens, testIDs, copy
-- INTEGRATION.md — external contracts (if present)
-- TASKS.md — implementation tasks (if present)
+Argue against the plan. Do not summarize it back approvingly. Report concrete findings in each category below, citing the document and section and, for code, the file and line. When a category has no findings, say so explicitly. Do not skip a category.
 
-## Your job
+1. **Vision**: for the parts that state the problem, users, scope, and success. Look for the wrong problem, success that cannot be measured, scope without a clear edge, contradictions, and solutions stated as requirements.
+2. **Assumptions**: claims about the existing code, data, or environment. Verify each against the code. Report the ones that are false or unverified.
+3. **Edge cases**: failure modes, empty and missing data, slow or unavailable dependencies, concurrency, and accessibility that the plan is silent on.
+4. **Alignment**: places the plan does more or less than its vision asks, and contradictions between its documents.
+5. **Verifiability**: acceptance criteria or tasks that cannot be checked as done.
+6. **Different approach**: run `to-theory` on the plan's central design problem with these changes:
+   - Confirm the theory gate yourself from the plan and the code. Do not wait for a reply.
+   - Record each parameter you cannot establish as an assumption instead of a question.
+   - Do the research step yourself against primary sources and cite them inline. Do not run `research` or write a file.
+   - Stop after the options and decision criteria. Do not choose an option or write the translate-back brief.
+   - List at least one option whose mechanism differs from the plan's.
 
-Argue against this plan. Do not summarize it back approvingly.
-
-Review every attached document and find:
-
-1. **Assumptions** — things taken for granted that might not hold in prod, on the totem, or with the BFF/WebView stack.
-2. **Edge cases** — failure modes, empty states, offline/slow BFF, missing data, accessibility, kiosk constraints the spec is silent on.
-3. **Spec / scope alignment** — places the plan does more or less than PRD asks for (scope creep or gaps). Cross-check ARCHITECTURE paths vs DESIGN testIDs vs INTEGRATION contracts.
-4. **Verifiability** — acceptance criteria or tasks that can't be checked as done; vague "implement X" without a observable outcome.
-
-For each category, list concrete findings with file references (e.g. `PRD.md` H2, `DESIGN.md` § estados). If you find nothing wrong in a category, say so explicitly — do not skip a category.
-
-Do not propose rewrites unless tied to a specific finding. End with a short verdict: **proceed**, **proceed with fixes**, or **blocked** — one sentence why.
+Propose changes only when tied to a specific finding. End with a verdict, **proceed**, **proceed with fixes**, or **blocked**, and one sentence why.
 ```
-
----
-
-## 3. Triage findings with the user
-
-Walk through the reviewer's findings one at a time. For each:
-
-- **Accepted** — plan/spec changes
-- **Rejected** — state why
-- **Deferred** — flagged; plan unchanged for now
-
-Every finding gets one of these three states. Nothing is applied silently.
-
----
-
-## 4. Edit only what was accepted
-
-Update spec files only for accepted findings. Touch only the sections those findings affect — typically `PRD.md`, `ARCHITECTURE.md`, `DESIGN.md`, `INTEGRATION.md`, or `TASKS.md` in the same folder.
-
-If you edited repo docs (`CONTEXT.md`, `docs/adr/`, etc.), invoke **`sync-doc-hub`** before finishing.
-
----
 
 ## Failure modes
 
-- **Rubber-stamping** — the LLM praises the plan instead of hunting for holes. Re-send the prompt verbatim; add: "Your last response was too agreeable. Be adversarial."
-- **Partial spec** — reviewing only `PRD.md` while ignoring `DESIGN.md` or `INTEGRATION.md`. Reload the full spec package from step 1.
-- **Silent rewrite** — findings applied without user triage. Defeats the purpose; user must choose accept/reject/defer for each finding.
-- **Vague ask** — sending "check this plan" without the fixed prompt in step 2. Produces generic feedback that isn't comparable run to run.
+- **Rubber-stamping**: the report praises the plan instead of hunting for holes. Spawn a new fresh reviewer with the same prompt plus `Your last response was too agreeable. Be adversarial.` Do not argue with the earlier reviewer.
+- **Partial plan**: the reviewer saw only part of the plan. Return to stage 1.
+- **Silent rewrite**: findings applied without triage. Every edit needs the user's acceptance.
