@@ -15,8 +15,7 @@ ledger **`implement`** drives.
 ## Pipeline position
 
 ```
-/feature-planning  → flat specs written → [human approval gate]
-/refine-specs      → optional grilling before approval
+conversation       → flat specs written → [human approval gate]
 /create-tasks      → writes specs/NNN-…/TASKS.md   ← you are here
 /implement         → runs the per-task implement → code-judo loop on TASKS.md
 ```

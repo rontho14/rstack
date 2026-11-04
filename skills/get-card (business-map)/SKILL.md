@@ -57,7 +57,7 @@ Rules for this section:
 
 ## Phase 4: Light clarification (ask-me lite)
 
-Run a **short** reconciliation interview. This is **not** full `ask-me` or `refinar-specs` — stop once scope and intent are aligned, not when every design branch is resolved.
+Run a **short** reconciliation interview. This is **not** full `ask-me` — stop once scope and intent are aligned, not when every design branch is resolved.
 
 ### Rules
 
@@ -92,6 +92,6 @@ Carry this brief into whatever the user does next (planning, coding, `lazy-plan`
 ## Failure modes
 
 - **Rubber-stamping the card** — summarizing without flagging smells or gaps. Always include the Assumptions & smells section.
-- **Full grill** — asking about architecture, folder structure, or spec file layout. That belongs in `refinar-specs` or planning skills, not here.
+- **Full grill** — asking about architecture, folder structure, or spec file layout. That belongs in planning, not here.
 - **Skipping MCP** — inventing card content from memory or the user's paraphrase. Always call `get-card` first.
 - **Silent scope change** — applying user corrections without restating them in the Reconciled working brief.

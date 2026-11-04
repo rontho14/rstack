@@ -98,9 +98,7 @@ All maintained skills will follow these conventions:
 The retained workflow is:
 
 ```text
-planner
-   ↓
-refine-specs
+conversation
    ↓
 create-tasks
    ↓
@@ -110,36 +108,6 @@ implement
 `ask-me`, `grill-me`, and `second-opinion` remain standalone. A user may invoke them before, during, or after specification work.
 
 This pipeline starts from one existing task, issue, or work item. One specification directory represents that one item. The pipeline refines and delivers bounded work; project inception and initial backlog creation will belong to a separate future skill.
-
-### `planner`
-
-Responsibilities:
-
-1. inspect the request and relevant host-repository conventions;
-2. choose the host repository's existing specification location, or establish one through `setup`;
-3. create the specification directory for the current task or issue;
-4. create the documents justified by that item;
-5. record unresolved decisions;
-6. stop before implementation.
-
-Documents:
-
-- `PRD.md` for the problem, scope, requirements, and acceptance criteria;
-- `ARCHITECTURE.md` for affected components, boundaries, data flow, and implementation constraints;
-- `DESIGN.md` for user interaction, states, copy, and accessibility when the feature has a user-facing design;
-- `INTEGRATION.md` for contracts across components or external systems when such boundaries exist.
-
-### `refine-specs`
-
-Responsibilities:
-
-1. read the active specification set and relevant repository documentation;
-2. identify ambiguous behavior, terminology, boundaries, contracts, and acceptance criteria;
-3. resolve decisions with the user;
-4. update the affected specification documents as decisions settle;
-5. finish with a coherent, verifiable specification set.
-
-Normalize the directory and frontmatter name to `refine-specs`.
 
 ### `create-tasks`
 
@@ -449,7 +417,7 @@ We will complete the work below together in order. Every task begins with an `as
    - Use `MUST use` for mandatory matching activities, `Use when` for semantic triggers, and `Use only when` plus `disable-model-invocation: true` for human-only skills.
    - Keep routing positive; put procedures and feature summaries in the skill body.
    - Require `unslop` for all user-facing prose, `tdd` for coding, `lazy-plan` for planning, `better-grep` for codebase search, and `docs-sync` after code changes when OKF is installed.
-   - Keep `refine-specs` and `create-pr` human-only.
+   - Keep `create-pr` human-only.
    - Apply the convention to every current skill and document it in the README.
    - Apply the same convention when creating future skills and validate it during repository checks.
 4. **Design the `okf-setup` skill — complete**
@@ -535,7 +503,7 @@ We will complete the work below together in order. Every task begins with an `as
 13. **Refine delivery skills**
     - Generalize `create-pr` and `get-work-item` around repository discovery and `setup` configuration.
 14. **Refine the issue-to-delivery pipeline**
-    - Align `planner`, `refine-specs`, `create-tasks`, and `implement` around one existing task or issue per specification directory.
+    - Align `create-tasks` and `implement` around one existing task or issue per specification directory.
 15. **Replace `orchestrator` with `implement` — initial skill created; acceptance exercise remains**
     - Implement tasks directly instead of delegating to developer, validator, bug investigator, and architecture agent roles; remove `agents/`.
     - Gate each task with a fresh `code-judo` subagent whose prompt is only `Run /code-judo.` and triage findings with a product view while staying strict on code quality.
