@@ -78,6 +78,7 @@ All maintained skills will follow these conventions:
 | `to-theory` | Reframe a concrete technical problem as a known theoretical problem and present source-backed options for the user to choose | Initial skill created; acceptance exercise remains |
 | `grill-me` | Stress-test an idea through rounds of independent decisions | Preserve frontier-based rounds; add attribution |
 | `ask-me` | Explore a design through one dependent question at a time | Clarify its sequential contract |
+| `council` | Have three fresh Opus subagents review a change, plan, or decision in parallel and loop until they are satisfied | Adapted from tstack; acceptance exercise remains |
 | `second-opinion` | Review a finished plan or vision adversarially in a fresh subagent, check it against the code, and propose a different approach through `to-theory` | Initial skill created; acceptance exercise remains |
 | `debug` | Diagnose runtime failures from evidence | Generalize evidence capture and project discovery |
 | `code-judo` | Run a thermo-nuclear maintainability review of uncommitted changes or changes since a base ref | Rebuilt from Cursor's skill; acceptance exercise remains |
@@ -365,6 +366,7 @@ Confirmed or likely sources to verify during implementation:
 - `tdd`: [cursor/plugins — `pstack/skills/tdd/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/pstack/skills/tdd/SKILL.md)
 - `test-audit`: [openclaw/openclaw — `.agents/skills/test-audit`](https://github.com/openclaw/openclaw/tree/5050eb796c4ec58f301cf20fd5269e506a257c8d/.agents/skills/test-audit), MIT; verbatim copy in `vendor/openclaw`
 - `code-judo`: [cursor/plugins — `cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md`](https://github.com/cursor/plugins/blob/23a56e2dac2efd54788056db8eced26e371d7b5e/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md)
+- `council`: [t3dotgg/tstack — `skills/council/SKILL.md`](https://github.com/t3dotgg/tstack/blob/1085050f3baed1ac724caa4a8166145fb2ac88af/skills/council/SKILL.md), MIT; verbatim copy in `vendor/tstack`
 
 ## Repository validation
 

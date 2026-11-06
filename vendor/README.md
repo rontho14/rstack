@@ -2,7 +2,7 @@
 
 Verbatim upstream imports. Every file here was copied unmodified from its source
 at the revision pinned in `SOURCES.md`, with the upstream `LICENSE` and
-copyright notice intact. All three sources are MIT.
+copyright notice intact. Every source is MIT.
 
 ## Why the copies are committed
 
@@ -35,5 +35,6 @@ imports so the two stay distinguishable.
   disagree about how the harness works, rstack moves toward pstack.
 - **cursor-team-kit** is cherry-picked, reviewed one skill at a time.
 - **mattpocock-skills** is largely untried and under evaluation.
+- **tstack** supplies `council` only.
 
 Per-skill decisions are recorded in `notes/`.
