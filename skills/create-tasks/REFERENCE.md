@@ -1,150 +1,90 @@
 # Reference — create-tasks skill
 
-Maps the flat specs (`PRD.md`, `ARCHITECTURE.md`, `DESIGN.md`,
-`INTEGRATION.md`) to implementation-atom categories and the canonical `TASKS.md` shape.
+Where to find atoms in the specs (`PRD.md`, `ARCHITECTURE.md`, `DESIGN.md`,
+`INTEGRATION.md`), how to order them, and a worked sizing example. The `TASKS.md` shape lives
+in [TEMPLATE.md](TEMPLATE.md).
 
 ## Decomposition guide
 
-Each category produces a distinct type of **atom**. The `Target Files` of every task come
-from the `ARCHITECTURE.md` **"New files and naming" table** (or `DESIGN.md` widget ids).
-
-> **An atom is not automatically a task.** Categories below are how you *find* the work, not
-> how you *package* it. After listing atoms, run SKILL.md step 3's test viability check and
-> merge every atom that cannot deliver a test that would fail if the atom were done wrong.
-> Category 1 atoms in particular are usually merged, not shipped alone: a constant with no
-> branching is verified by whatever consumes it. Category 6 is the extreme case — see its note.
+The categories below are how you *find* atoms, not how you *package* them: SKILL.md steps 3
+and 4 decide the tasks. Tests are not a category.
 
 ### Category 1: Config & constants
 
-Source: `ARCHITECTURE.md` → "Data model / contracts" + naming-table `Config` row.
+Source: `ARCHITECTURE.md` data model and contracts, and the naming table's config rows.
 
-Atoms:
-- New `config.py` constants (port sets, NSE script tuples, timeouts)
-- `scan_mode` Literal extensions and mode-helper branches
-  (`port_stage_scripts()` / `deep_stage_scripts()`)
+- New configuration values, limits, timeouts, and feature flags
+- Enum or union extensions and the branches that read them
 
-Task pattern: "Add {CONSTANT} to config.py per ARCHITECTURE.md"
+### Category 2: Pure helpers & data contracts
 
-### Category 2: Pure helpers & generators
+Source: `ARCHITECTURE.md` contracts (naming rules, formats, grammars, schemas).
 
-Source: `ARCHITECTURE.md` contracts (naming rules, argv/flag sets, grammars).
-
-Atoms:
-- Name/path generators, argv/command builders (flag injection, dedup)
+- Name/path generators, command or query builders
 - Serialization / encoding / format utilities
-- Merge helpers (e.g. dedup ports by `(port, protocol)`)
+- Merge and dedup helpers
+- Shared types, schemas, and validation models
 
-Task pattern: "Build {thing} generator per ARCHITECTURE.md"
+### Category 3: Core behavior
 
-### Category 3: Core behavior (discovery / pipeline / normalization)
+Source: `ARCHITECTURE.md` system context and the naming-table rows for the feature's
+services, modules, or pipeline stages.
 
-Source: `ARCHITECTURE.md` "System context" + naming-table `Discovery` / `Normalize` rows.
+- New services, handlers, jobs, processors, I/O adapters
+- Changes to existing flows that implement a business rule
+- Persistence and migration changes
 
-Atoms:
-- New runners, scan passes, processors, I/O handlers
-- `ScanPayload` / pydantic field changes in `normalize/contracts.py`
-- Metadata writers
+### Category 4: User interface
 
-Task pattern: "Implement {behavior} per ARCHITECTURE.md"
+Source: `DESIGN.md` (screen flow, layout, interactions, copy, element ids).
 
-### Category 4: TUI screens
+- New screens, pages, or components
+- Behavior changes on existing screens (new states, interactions, copy)
+- Element-id additions needed for tests
 
-Source: `DESIGN.md` (screen flow, layout, key bindings, copy, widget ids).
+## Dependency rules
 
-Atoms:
-- New Textual screens (one task per screen)
-- Screen behavior changes (category-aware option lists, new bindings, copy)
-- Widget-id additions needed for tests
+These rules order atoms. When both atoms land in the same task, the rule only orders the
+work inside it. When they land in different tasks, it becomes a task dependency.
 
-Task pattern: "Create {Screen} per DESIGN.md" / "Update {Screen} for {change}"
+- Config and constants come before everything that reads them
+- Schemas and shared types come before any code that builds or validates that data
+- Helpers come before the core behavior that uses them
+- Core behavior comes before the integration and wiring that call it
+- A screen comes before the screen that navigates to it
 
-### Category 5: Caller / integration updates
-
-Source: `ARCHITECTURE.md` call sites + the CLAUDE.md integration rule.
-
-Atoms:
-- Wire new modules into existing call sites (orchestrator, runner, screens)
-- **Thread new orchestrator/runner params through `ScanRunner`
-  (`scanner/runner.py`) and `ScanProgressScreen` (`tui/screens/scan_progress.py`)** —
-  mandatory whenever a param is added; TUI scans bypass `ScanOrchestrator.run()`
-
-Task pattern: "Wire {caller} to use {new-module}" / "Thread {param} through ScanRunner + ScanProgressScreen"
-
-### Category 6: Tests
-
-Source: `ARCHITECTURE.md` "Testing expectations" + `PRD.md` acceptance criteria.
-
-Atoms:
-- Unit tests under `hardware-agent/tests/unit/` for new constants / helpers / merges
-- Tests asserting behavior for each acceptance-criteria scenario
-- Follow the nearest existing test (e.g. `test_scan_mode_scripts.py`) for patterns
-
-Task pattern: "Unit tests for {thing}" — one task per coherent test target.
-
-**Prefer tests inside the task that builds the thing.** A separate test task is worth it only
-when the suite is large enough to stand alone (a full rule table, a state matrix) or when it
-spans several earlier tasks. Otherwise the test belongs in the implementing task's
-`Target Files`, named in its `Tests` field — that is what makes step 3's viability check pass
-and what stops thin atoms from becoming their own review cycles.
-
-## Acceptance criteria → task mapping
-
-`PRD.md` holds a verifiable acceptance-criteria table (Given/When/Then). Use it as the
-cross-check: **every scenario must map to at least one task** (an implementation task, a
-test task, or both). If a scenario has no corresponding task, either add one or confirm an
-existing task's `Success Criteria` already covers it. The `Success Criteria` you write
-should trace back to these scenarios so the code reviewer can gate on them.
-
-## Dependency heuristics
-
-```
-config/constants ──→ helpers ──→ core behavior ──→ caller/integration
-       │                              │
-       └──────────────→ tests        └──→ TUI screens ──→ TUI wiring
-```
-
-- Config/constant tasks block everything that reads those constants
-- Schema/`ScanPayload` tasks block any code that builds or validates that payload
-- Helper tasks block the core behavior that uses them
-- Core behavior tasks block the integration/wiring task
-- Screen tasks block the screen that pushes them and the wiring task
-- A param added to the orchestrator/runner blocks the `ScanRunner` /
-  `ScanProgressScreen` threading task (CLAUDE.md rule)
-
-Encode dependencies in each task's `Dependencies` field and in the `## Dependency graph`
+Encode task dependencies in each task's `Dependencies` field and in the `## Dependency graph`
 block at the bottom of `TASKS.md`.
 
-## Exclusion rules
+## Sizing example
 
-Do NOT create tasks for:
-- Items under `PRD.md` "Out of scope (v1)", or marked "deferred" / "not v1" /
-  "superseded" in `decisions/`
-- Anything in `open-questions/to-define.md` (unresolved — blocks, not work)
-- Separate test suites beyond `ARCHITECTURE.md` "Testing expectations"
-- CI/CD or infrastructure changes (the architecture agent flags
-  `HUMAN_INFRA_REQUIRED` for those — they are human-only)
-- Documentation files (the specs ARE the documentation)
+A feature has two user stories. **Export:** a user exports a report as CSV from the report
+screen or from the CLI. **Nightly export:** every report is exported to storage each night,
+with retries and an alert on failure. The specs name: a `CsvFormat` config constant, a
+`formatCsvRow` helper with escaping rules, an `ExportService.exportCsv` method, an export
+endpoint, a `--format csv` flag on the existing CLI `report` command, an Export button on the
+report screen, a new CSV library dependency, and a scheduled job with its retry and alert
+handling.
 
-## Task body template
+**Too fine: eight tasks**, one per atom. The constant and the dependency each burn a full
+review loop on a diff no test can fail, and the helper, service, endpoint, flag, and button
+each repeat the loop for pieces of one story.
 
-Fill the canonical task shape (matches `specs/_templates/TASKS.md`):
+**Too coarse: one task** with both stories. Neither story is small, and the export task alone
+is already past half the size guide, so they cannot share a task.
 
-```markdown
-## Task N: {imperative verb + what}
-- **Description**: {2–3 sentences: what to implement, which spec file governs it}
-- **Absorbed**: {atoms merged in per SKILL.md step 3, and why each could not carry a test —
-  omit the line entirely when nothing was merged}
-- **Dependencies**: {task numbers, or —}
-- **Target Files**: [{exact paths from the ARCHITECTURE.md naming table / DESIGN.md}]
-- **Tests**: {the test file(s) this task delivers and what they prove}
-- **Success Criteria**:
-  - {Verifiable goal 1 — what the reviewer checks}
-  - {Verifiable goal 2}
-  - Tests: {specific function/behavior the unit test must verify}
-- **Status**: PENDING
-- **Review Rejections**: 0
-```
+**Packed: two tasks.**
 
-Then close `TASKS.md` with the dependency graph and status table from the template. Leave
-`Status: PENDING` and `Review Rejections: 0` untouched — `implement` owns
-those fields once the build starts.
+1. *Export a report as CSV from the screen and the CLI.* Constant, dependency, helper,
+   service method, endpoint, CLI flag, and button, with tests for the escaping rules, the
+   endpoint, the flag, and the button. `Absorbed:` the constant and the dependency. One story,
+   all of its scenarios, across every layer: about 12 files counting tests, under the size
+   guide.
+2. *Export every report nightly.* The scheduled job with its retry and alert handling,
+   calling the service from task 1. Another story, so it starts a new task even though it
+   builds on task 1.
+
+If the escaping rules were a large grammar that other export formats share, the helper would
+still go into task 1, the first slice that uses it. It would become its own task only if it
+carries its own tests and task 1 stayed past the size guide even after splitting the export
+story by scenarios.

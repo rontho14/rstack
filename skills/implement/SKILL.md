@@ -27,9 +27,11 @@ Take tasks in dependency order, one at a time. Never implement tasks in parallel
 
 1. Implement the task, including any debt carried into it.
 2. Produce the `tdd` completion evidence: failing-before, passing-after, relevant adjacent validation, and the coverage bar or the alternative recorded by `setup`. Do not start a review without it.
-3. Run the [review loop](#review-loop) with the prompt `Run /code-judo.`
-4. When the task passes, set its `Status` to `COMPLETED` and its `Review Rejections` to the number of `[REJECT]` rounds in `TASKS.md`.
-5. Commit the task's code and ledger update together, using `commit` when it is installed.
+3. Run the lint, test, and build commands from the `TASKS.md` pre-review gate, or without `TASKS.md`, the repository's own commands for them. Fix every failure.
+4. Prove the task's `Success Criteria` with the repository's verification skill, or its formal verification skill when the task touches the code that skill covers.
+5. Run the [review loop](#review-loop) with the prompt `Run /code-judo.`
+6. When the task passes, set its `Status` to `COMPLETED` and its `Review Rejections` to the number of `[REJECT]` rounds in `TASKS.md`.
+7. Commit the task's code and ledger update together, using `commit` when it is installed.
 
 ## Review loop
 
