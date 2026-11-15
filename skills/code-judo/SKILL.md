@@ -96,6 +96,7 @@ Report a finding aggressively when the change introduces or worsens:
 - magic handling that hides straightforward structure;
 - wrappers or abstractions that do not simplify anything;
 - unnecessary casts, dynamic or catch-all types, or optional parameters;
+- a guard, validation, or error path for a state no caller can produce;
 - copied logic that should use an existing helper;
 - edge-case handling buried in an already busy function;
 - a refactor that moves complexity without reducing it;
