@@ -12,7 +12,7 @@ rstack contains:
 - an optional planning and delivery pipeline;
 - lightweight specification templates;
 - a `setup` skill that configures the installed collection for its host repository;
-- an `AGENTS.md` of coding rules that apply to every task that builds, fixes, or refactors code.
+- a `craft` skill of coding rules that apply to every task that builds, fixes, or refactors code, and an `AGENTS.md` that points agents to it.
 
 Each skill owns one clear behavior. Skills may compose other skills through documented names and contracts.
 
@@ -70,6 +70,7 @@ All maintained skills will follow these conventions:
 
 | Skill | Purpose | Planned work |
 |---|---|---|
+| `craft` | Write code that meets four parameters, logic, security, readability, and performance, with size as the tiebreaker | Initial skill created; acceptance exercise remains |
 | `tdd` | Establish a useful executable check before production code changes | Initial skill created; acceptance exercise remains |
 | `test-audit` | Gate new tests and audit or prune low-value, duplicative, or implementation-coupled tests | Adapted from OpenClaw; acceptance exercise remains |
 | `lazy-plan` | Produce the smallest plan that safely unblocks work | Review wording and portability |
@@ -129,7 +130,7 @@ Responsibilities:
 1. run only when the user explicitly invokes it;
 2. stop when the working tree is dirty, otherwise record `HEAD` as the feature base;
 3. take an existing `TASKS.md`, or treat a request described in conversation as one task;
-4. implement each task itself in dependency order, following `AGENTS.md`, `tdd`, the `test-audit` authoring gate, and `code-judo`'s standards;
+4. implement each task itself in dependency order, following `craft`, `tdd`, the `test-audit` authoring gate, and `code-judo`'s standards;
 5. never reference the specification in code, tests, file names, or commit messages;
 6. require `tdd` completion evidence before each review;
 7. review each task with a fresh subagent whose entire prompt is `Run /code-judo.`, without adding specification, diff summaries, explanations, or earlier findings;
@@ -186,7 +187,7 @@ Strip business terminology and personal context from a technical or engineering-
 
 ### Workflow
 
-1. Run when the user invokes `/to-theory`, or when an agent following `AGENTS.md` finds no repository pattern that settles how to build something.
+1. Run when the user invokes `/to-theory`, or when an agent following `craft` finds no repository pattern that settles how to build something.
 2. Accept technical and engineering-organization problems: software and system design, delivery, and team-process problems with established theory. Decline personal, product-only, and business-only decisions instead of forcing a theory onto them.
 3. Read the pasted material and the code it points to directly, following references as far as needed, to extract the parameters that could change the choice, such as payload size, frequency of the special case, round-trip cost, and component ownership.
 4. Present the theory gate and wait:
@@ -534,7 +535,7 @@ We will complete the work below together in order. Every task begins with an `as
     - The skill owns concise companion guidance derived from the research note, including input parsing, candidate evaluation, safety boundaries, retained evidence, loop invariants, stopping conditions, and an acceptance exercise.
 
 21. **Design the `to-theory` skill — initial skill created; acceptance exercise remains**
-    - Run on human invocation, or when an agent following `AGENTS.md` finds no repository pattern that settles how to build something.
+    - Run on human invocation, or when an agent following `craft` finds no repository pattern that settles how to build something.
     - Accept technical and engineering-organization problems; decline personal, product-only, and business-only decisions.
     - Read the pasted material and referenced code directly to find decision parameters; ask only about unknown parameters that could change the choice.
     - Stop at a theory gate that shows the term mapping, abstract problem, problem class, and parameters; research only after the user confirms.

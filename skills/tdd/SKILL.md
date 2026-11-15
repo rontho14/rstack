@@ -30,7 +30,7 @@ When a useful unit test is unavailable, choose the cheapest executable check tha
 5. Before editing production code:
    - for a bug fix or new behavior, write and run the focused check and confirm that it fails for the intended reason;
    - for a refactor, run the existing focused tests first; when they do not pin the behavior, add a characterization test before refactoring.
-6. Make the smallest production change that satisfies the check.
+6. Make the production change that satisfies the check, following `craft` when it is installed.
 7. Rerun the focused check and confirm it passes.
 8. Run adjacent tests, type checks, lint, or integration checks only when the changed boundary makes them relevant.
 9. Measure coverage using the repository policy established by `setup`.

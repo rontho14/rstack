@@ -18,7 +18,7 @@ Implement the requested work yourself, one task at a time. Gate every task behin
 
 ## Write the code
 
-- Follow `AGENTS.md` and `tdd`.
+- Follow `craft` and `tdd`.
 - Never reference the specification, task numbers, or planning text in code, tests, identifiers, file names, or commit messages. Describe the behavior itself.
 
 ## Per task
@@ -40,6 +40,7 @@ Take tasks in dependency order, one at a time. Never implement tasks in parallel
 3. Triage every finding:
    - Accept code-quality findings by default. Be strict.
    - Reject a finding only when it contradicts a recorded decision: the specification, an ADR, an explicit user decision, or an established repository pattern. Record a one-line reason naming that decision. Preference is not a reason.
+   - Also reject a finding when applying it would break a `craft` parameter: logic, security, readability, or performance. Record a one-line reason naming the parameter and what would break.
    - Ignore `Debt` unless it is worth fixing. Carry debt worth fixing into the next task, or into the final review when no task remains.
 4. Fix the accepted findings, rerun the focused checks, and start a new round.
 5. The loop passes when the latest review is `[APPROVE]` or contains only findings rejected with a recorded reason.
