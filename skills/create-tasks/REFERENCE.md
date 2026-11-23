@@ -1,6 +1,6 @@
 # Reference — create-tasks skill
 
-Where to find atoms in the specs (`PRD.md`, `ARCHITECTURE.md`, `DESIGN.md`,
+Where to find atoms in the specs (`SPEC.md`, `PRD.md`, `ARCHITECTURE.md`, `DESIGN.md`,
 `INTEGRATION.md`), how to order them, and a worked sizing example. The `TASKS.md` shape lives
 in [TEMPLATE.md](TEMPLATE.md).
 

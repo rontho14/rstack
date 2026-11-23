@@ -37,14 +37,17 @@ spec to taskify.
 Read the docs in this order. Pass through whatever exists: `DESIGN.md` and
 `INTEGRATION.md` are optional.
 
-1. `PRD.md`: narrative, business rules, user stories, **verifiable acceptance
+1. `SPEC.md` (when using the single-file layout): problem and goal, scope and non-goals,
+   locked decisions, external contracts, **touch map** (new and modified files),
+   **behavioral requirements** (`R1..Rn`), verification oracle, and open questions
+2. `PRD.md`: narrative, business rules, user stories, **verifiable acceptance
    criteria** (Given/When/Then), out-of-scope
-2. `ARCHITECTURE.md`: fit with the existing system, data/contract changes, and the
+3. `ARCHITECTURE.md`: fit with the existing system, data/contract changes, and the
    **"New files and naming" table**
-3. `DESIGN.md`: screen flow, layout, interactions, copy, element ids (only when the user
+4. `DESIGN.md`: screen flow, layout, interactions, copy, element ids (only when the user
    interface changes)
-4. `INTEGRATION.md`: only when a real cross-layer contract exists
-5. Any accepted decisions and unresolved questions the spec directory records
+5. `INTEGRATION.md`: only when a real cross-layer contract exists
+6. Any other accepted decisions and unresolved questions the spec directory records
 
 Then read the host repository's code that the specs name, so ordering and `Target Files`
 reflect the real code rather than the specs' description of it.
